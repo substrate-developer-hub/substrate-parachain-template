@@ -35,8 +35,6 @@ use sp_std::prelude::*;
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
-mod message_example;
-
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
 	construct_runtime, parameter_types,
@@ -49,6 +47,7 @@ pub use pallet_timestamp::Call as TimestampCall;
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
+pub use message_example::XCMPMessage;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -123,12 +122,6 @@ pub const DAYS: BlockNumber = HOURS * 24;
 
 // 1 in 4 blocks (on average, not counting collisions) will be primary babe blocks.
 pub const PRIMARY_PROBABILITY: (u64, u64) = (1, 4);
-
-#[derive(codec::Encode, codec::Decode)]
-pub enum XCMPMessage<XAccountId, XBalance> {
-	/// Transfer tokens to the given account from the Parachain account.
-	TransferToken(XAccountId, XBalance),
-}
 
 /// The version infromation used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
@@ -244,7 +237,7 @@ impl cumulus_parachain_upgrade::Trait for Runtime {
 }
 
 parameter_types! {
-	pub storage ParachainId: cumulus_primitives::ParaId = 100.into();
+	pub const ParachainId: cumulus_primitives::ParaId = 100.into();
 }
 
 impl cumulus_message_broker::Trait for Runtime {
@@ -277,7 +270,7 @@ construct_runtime! {
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
 		ParachainUpgrade: cumulus_parachain_upgrade::{Module, Call, Storage, Inherent, Event},
 		MessageBroker: cumulus_message_broker::{Module, Call, Inherent, Event<T>},
-		TokenDealer: message_example::{Module, Call, Event<T>, Config},
+		TokenDealer: message_example::{Module, Call, Event<T>},
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
 	}
 }

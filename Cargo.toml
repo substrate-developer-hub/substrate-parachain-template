@@ -1,6 +1,7 @@
 [workspace]
 members = [
 	"runtime/",
+	"pallets/message/",
 	"node/",
 ]
 

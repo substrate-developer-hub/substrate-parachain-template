@@ -16,8 +16,7 @@
 
 use cumulus_primitives::ParaId;
 use parachain_runtime::{
-	AccountId, BalancesConfig, GenesisConfig, Signature, SudoConfig, SystemConfig,
-	TokenDealerConfig, WASM_BINARY,
+	AccountId, BalancesConfig, GenesisConfig, Signature, SudoConfig, SystemConfig, WASM_BINARY,
 };
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
@@ -92,7 +91,7 @@ pub fn get_chain_spec(id: ParaId) -> ChainSpec {
 		None,
 		None,
 		Extensions {
-			relay_chain: "westend-dev".into(),
+			relay_chain: "rococo".into(),
 			para_id: id.into(),
 		},
 	)
@@ -115,7 +114,7 @@ pub fn staging_test_net(id: ParaId) -> ChainSpec {
 		None,
 		None,
 		Extensions {
-			relay_chain: "westend-dev".into(),
+			relay_chain: "rococo".into(),
 			para_id: id.into(),
 		},
 	)
@@ -139,6 +138,5 @@ fn testnet_genesis(
 				.collect(),
 		}),
 		pallet_sudo: Some(SudoConfig { key: root_key }),
-		message_example: Some(TokenDealerConfig { parachain_id: id }),
 	}
 }

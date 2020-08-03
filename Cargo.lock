@@ -1103,13 +1103,13 @@ dependencies = [
  "frame-executive",
  "frame-support",
  "frame-system",
+ "message-example",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
  "pallet-timestamp",
  "pallet-transaction-payment",
  "parity-scale-codec",
- "polkadot-parachain",
  "serde",
  "sp-api",
  "sp-block-builder",
@@ -3263,6 +3263,18 @@ dependencies = [
  "keccak",
  "rand_core 0.5.1",
  "zeroize",
+]
+
+[[package]]
+name = "message-example"
+version = "2.0.0-rc5"
+dependencies = [
+ "cumulus-primitives",
+ "cumulus-upward-message",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "polkadot-parachain",
 ]
 
 [[package]]
@@ -8560,9 +8572,9 @@ checksum = "373c8a200f9e67a0c95e62a4f52fbf80c23b4381c05a17845531982fa99e6b33"
 
 [[package]]
 name = "uint"
-version = "0.8.3"
+version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "173cd16430c206dc1a430af8a89a0e9c076cf15cb42b4aedb10e8cc8fee73681"
+checksum = "429ffcad8c8c15f874578c7337d156a3727eb4a1c2374c0ae937ad9a9b748c80"
 dependencies = [
  "byteorder",
  "crunchy",

@@ -18,12 +18,11 @@
 //! downward messages.
 
 use frame_support::{
-	decl_event, decl_module, decl_storage,
+	decl_event, decl_module, dispatch::DispatchResult,
 	traits::{Currency, ExistenceRequirement, WithdrawReason},
 };
 use frame_system::ensure_signed;
 
-use crate::XCMPMessage;
 use codec::{Decode, Encode};
 use cumulus_primitives::{
 	relay_chain::DownwardMessage,
@@ -32,7 +31,12 @@ use cumulus_primitives::{
 };
 use cumulus_upward_message::BalancesMessage;
 use polkadot_parachain::primitives::AccountIdConversion;
-use sp_runtime::DispatchResult;
+
+#[derive(Encode, Decode)]
+pub enum XCMPMessage<XAccountId, XBalance> {
+	/// Transfer tokens to the given account from the Parachain account.
+	TransferToken(XAccountId, XBalance),
+}
 
 type BalanceOf<T> =
 	<<T as Trait>::Currency as Currency<<T as frame_system::Trait>::AccountId>>::Balance;
@@ -53,19 +57,6 @@ pub trait Trait: frame_system::Trait {
 
 	/// The sender of XCMP messages.
 	type XCMPMessageSender: XCMPMessageSender<XCMPMessage<Self::AccountId, BalanceOf<Self>>>;
-}
-
-// This pallet's storage items.
-decl_storage! {
-	trait Store for Module<T: Trait> as ParachainUpgrade {}
-	add_extra_genesis {
-		config(parachain_id): ParaId;
-		build(|config: &Self| {
-			// This is basically a hack to make the parachain id easily configurable.
-			// Could also be done differently, but yeah..
-			crate::ParachainId::set(&config.parachain_id);
-		});
-	}
 }
 
 decl_event! {
