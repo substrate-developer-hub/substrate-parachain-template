@@ -1,19 +1,4 @@
-// Copyright 2019 Parity Technologies (UK) Ltd.
-// This file is part of Cumulus.
-
-// Cumulus is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// Cumulus is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with Cumulus.  If not, see <http://www.gnu.org/licenses/>.
-
+// Copyright 2020 Parity Technologies (UK) Ltd.
 #![cfg_attr(not(feature = "std"), no_std)]
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
@@ -52,7 +37,7 @@ pub use sp_runtime::{Perbill, Permill};
 pub use template;
 
 /// Import the message pallet.
-pub use message_example;
+pub use token_dealer;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -241,20 +226,16 @@ impl cumulus_parachain_upgrade::Trait for Runtime {
 	type OnValidationFunctionParams = ();
 }
 
-parameter_types! {
-	pub storage ParachainId: cumulus_primitives::ParaId = 100.into();
-}
-
 impl cumulus_message_broker::Trait for Runtime {
 	type Event = Event;
 	type DownwardMessageHandlers = TokenDealer;
 	type UpwardMessage = cumulus_upward_message::RococoUpwardMessage;
-	type ParachainId = ParachainId;
-	type XCMPMessage = message_example::XCMPMessage<AccountId, Balance>;
+	type ParachainId = token_dealer::ParachainId;
+	type XCMPMessage = token_dealer::XCMPMessage<AccountId, Balance>;
 	type XCMPMessageHandlers = TokenDealer;
 }
 
-impl message_example::Trait for Runtime {
+impl token_dealer::Trait for Runtime {
 	type Event = Event;
 	type UpwardMessageSender = MessageBroker;
 	type UpwardMessage = cumulus_upward_message::RococoUpwardMessage;
@@ -280,7 +261,7 @@ construct_runtime! {
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
 		ParachainUpgrade: cumulus_parachain_upgrade::{Module, Call, Storage, Inherent, Event},
 		MessageBroker: cumulus_message_broker::{Module, Call, Inherent, Event<T>},
-		TokenDealer: message_example::{Module, Call, Event<T>},
+		TokenDealer: token_dealer::{Module, Call, Storage, Config, Event<T>},
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
 		TemplateModule: template::{Module, Call, Storage, Event<T>},
 	}

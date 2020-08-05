@@ -1,26 +1,8 @@
+// Copyright 2020 Parity Technologies (UK) Ltd.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-// Copyright 2020 Parity Technologies (UK) Ltd.
-// This file is part of Cumulus.
-
-// Cumulus is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-
-// Cumulus is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-
-// You should have received a copy of the GNU General Public License
-// along with Cumulus.  If not, see <http://www.gnu.org/licenses/>.
-
-//! Example Pallet that shows how to send upward messages and how to receive
-//! downward messages.
-
 use frame_support::{
-	decl_event, decl_module, dispatch::DispatchResult,
+	decl_event, decl_module, decl_storage, parameter_types, dispatch::DispatchResult,
 	traits::{Currency, ExistenceRequirement, WithdrawReason},
 };
 use frame_system::ensure_signed;
@@ -59,6 +41,23 @@ pub trait Trait: frame_system::Trait {
 
 	/// The sender of XCMP messages.
 	type XCMPMessageSender: XCMPMessageSender<XCMPMessage<Self::AccountId, BalanceOf<Self>>>;
+}
+
+parameter_types! {
+	pub storage ParachainId: cumulus_primitives::ParaId = 150.into();
+}
+
+// This pallet's storage items.
+decl_storage! {
+	trait Store for Module<T: Trait> as ParachainUpgrade {}
+	add_extra_genesis {
+		config(parachain_id): ParaId;
+		build(|config: &Self| {
+			// This is basically a hack to make the parachain id easily configurable.
+			// Could also be done differently, but yeah..
+			ParachainId::set(&config.parachain_id);
+		});
+	}
 }
 
 decl_event! {

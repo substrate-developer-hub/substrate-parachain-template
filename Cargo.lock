@@ -3174,18 +3174,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "message-example"
-version = "2.0.0-rc5"
-dependencies = [
- "cumulus-primitives",
- "cumulus-upward-message",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "polkadot-parachain",
-]
-
-[[package]]
 name = "miniz_oxide"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4117,6 +4105,7 @@ dependencies = [
  "substrate-build-script-utils",
  "substrate-test-client",
  "substrate-test-runtime-client",
+ "token-dealer",
  "tokio 0.2.22",
  "trie-root 0.15.2",
 ]
@@ -4133,7 +4122,6 @@ dependencies = [
  "frame-executive",
  "frame-support",
  "frame-system",
- "message-example",
  "pallet-balances",
  "pallet-randomness-collective-flip",
  "pallet-sudo",
@@ -4154,6 +4142,7 @@ dependencies = [
  "sp-transaction-pool",
  "sp-version",
  "substrate-wasm-builder-runner 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "token-dealer",
 ]
 
 [[package]]
@@ -8212,6 +8201,19 @@ name = "tinyvec"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "53953d2d3a5ad81d9f844a32f14ebb121f50b650cd59d0ee2a07cf13c617efed"
+
+[[package]]
+name = "token-dealer"
+version = "2.0.0-rc5"
+dependencies = [
+ "cumulus-primitives",
+ "cumulus-upward-message",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "polkadot-parachain",
+ "serde",
+]
 
 [[package]]
 name = "tokio"
