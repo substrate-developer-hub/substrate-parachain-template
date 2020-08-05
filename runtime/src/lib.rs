@@ -47,7 +47,12 @@ pub use pallet_timestamp::Call as TimestampCall;
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
-pub use message_example::XCMPMessage;
+
+/// Import the template pallet.
+pub use template;
+
+/// Import the message pallet.
+pub use message_example;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -245,7 +250,7 @@ impl cumulus_message_broker::Trait for Runtime {
 	type DownwardMessageHandlers = TokenDealer;
 	type UpwardMessage = cumulus_upward_message::RococoUpwardMessage;
 	type ParachainId = ParachainId;
-	type XCMPMessage = XCMPMessage<AccountId, Balance>;
+	type XCMPMessage = message_example::XCMPMessage<AccountId, Balance>;
 	type XCMPMessageHandlers = TokenDealer;
 }
 
@@ -255,6 +260,11 @@ impl message_example::Trait for Runtime {
 	type UpwardMessage = cumulus_upward_message::RococoUpwardMessage;
 	type Currency = Balances;
 	type XCMPMessageSender = MessageBroker;
+}
+
+/// Configure the pallet template in pallets/template.
+impl template::Trait for Runtime {
+	type Event = Event;
 }
 
 construct_runtime! {
@@ -272,6 +282,7 @@ construct_runtime! {
 		MessageBroker: cumulus_message_broker::{Module, Call, Inherent, Event<T>},
 		TokenDealer: message_example::{Module, Call, Event<T>},
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
+		TemplateModule: template::{Module, Call, Storage, Event<T>},
 	}
 }
 

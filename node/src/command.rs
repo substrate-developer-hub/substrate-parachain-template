@@ -68,15 +68,6 @@ impl SubstrateCli for Cli {
 			"staging" => Ok(Box::new(chain_spec::staging_test_net(
 				self.run.parachain_id.unwrap_or(100).into(),
 			))),
-			"tick" => Ok(Box::new(chain_spec::ChainSpec::from_json_bytes(
-				&include_bytes!("../res/tick.json")[..],
-			)?)),
-			"trick" => Ok(Box::new(chain_spec::ChainSpec::from_json_bytes(
-				&include_bytes!("../res/trick.json")[..],
-			)?)),
-			"track" => Ok(Box::new(chain_spec::ChainSpec::from_json_bytes(
-				&include_bytes!("../res/track.json")[..],
-			)?)),
 			"" => Ok(Box::new(chain_spec::get_chain_spec(
 				self.run.parachain_id.unwrap_or(100).into(),
 			))),
@@ -104,7 +95,7 @@ impl SubstrateCli for RelayChainCli {
 		"Cumulus test parachain collator\n\nThe command-line arguments provided first will be \
 		passed to the parachain node, while the arguments provided after -- will be passed \
 		to the relaychain node.\n\n\
-		cumulus-test-parachain-collator [parachain-args] -- [relaychain-args]"
+		parachain-collator [parachain-args] -- [relaychain-args]"
 			.into()
 	}
 
