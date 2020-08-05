@@ -1,3 +1,5 @@
+#![cfg_attr(not(feature = "std"), no_std)]
+
 // Copyright 2020 Parity Technologies (UK) Ltd.
 // This file is part of Cumulus.
 

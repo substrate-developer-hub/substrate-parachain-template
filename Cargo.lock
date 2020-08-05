@@ -4104,6 +4104,7 @@ dependencies = [
  "sc-service",
  "sc-transaction-pool",
  "serde",
+ "sp-api",
  "sp-consensus",
  "sp-core",
  "sp-inherents",

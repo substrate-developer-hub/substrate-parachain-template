@@ -27,6 +27,7 @@ parachain-runtime = { path = "../runtime" }
 # Substrate dependencies
 sp-runtime = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "rococo-branch" }
 sp-io = { git = "https://github.com/paritytech/substrate", branch = "rococo-branch" }
+sp-api = { git = "https://github.com/paritytech/substrate", branch = "rococo-branch" }
 sp-core = { git = "https://github.com/paritytech/substrate", branch = "rococo-branch" }
 sp-inherents = { git = "https://github.com/paritytech/substrate", branch = "rococo-branch" }
 sp-consensus = { git = "https://github.com/paritytech/substrate", branch = "rococo-branch" }
