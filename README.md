@@ -37,19 +37,19 @@ cargo build --release
 Purge any existing staging chain state:
 
 ```bash
-./target/release/parachain-collator purge-chain --staging
+./target/release/parachain-collator purge-chain --chain staging
 ```
 
 Start a staging chain:
 
 ```bash
-./target/release/parachain-collator --staging
+./target/release/parachain-collator --chain staging
 ```
 
 Or, start a staging chain with detailed logging:
 
 ```bash
-RUST_LOG=debug RUST_BACKTRACE=1 ./target/release/parachain-collator -lruntime=debug --staging
+RUST_LOG=debug RUST_BACKTRACE=1 ./target/release/parachain-collator -lruntime=debug --chain staging
 ```
 
 ### Multi-Node Local Testnet
