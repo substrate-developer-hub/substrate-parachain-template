@@ -8212,7 +8212,6 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "polkadot-parachain",
- "serde",
 ]
 
 [[package]]

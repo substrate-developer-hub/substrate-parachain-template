@@ -226,11 +226,15 @@ impl cumulus_parachain_upgrade::Trait for Runtime {
 	type OnValidationFunctionParams = ();
 }
 
+parameter_types! {
+	pub storage ParachainId: cumulus_primitives::ParaId = 200.into();
+}
+
 impl cumulus_message_broker::Trait for Runtime {
 	type Event = Event;
 	type DownwardMessageHandlers = TokenDealer;
 	type UpwardMessage = cumulus_upward_message::RococoUpwardMessage;
-	type ParachainId = token_dealer::ParachainId;
+	type ParachainId = ParachainId;
 	type XCMPMessage = token_dealer::XCMPMessage<AccountId, Balance>;
 	type XCMPMessageHandlers = TokenDealer;
 }
@@ -261,7 +265,7 @@ construct_runtime! {
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Module, Call, Storage},
 		ParachainUpgrade: cumulus_parachain_upgrade::{Module, Call, Storage, Inherent, Event},
 		MessageBroker: cumulus_message_broker::{Module, Call, Inherent, Event<T>},
-		TokenDealer: token_dealer::{Module, Call, Storage, Config, Event<T>},
+		TokenDealer: token_dealer::{Module, Call, Event<T>},
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
 		TemplateModule: template::{Module, Call, Storage, Event<T>},
 	}

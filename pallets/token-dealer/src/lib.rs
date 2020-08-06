@@ -2,7 +2,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use frame_support::{
-	decl_event, decl_module, decl_storage, parameter_types, dispatch::DispatchResult,
+	decl_event, decl_module, dispatch::DispatchResult,
 	traits::{Currency, ExistenceRequirement, WithdrawReason},
 };
 use frame_system::ensure_signed;
@@ -41,23 +41,6 @@ pub trait Trait: frame_system::Trait {
 
 	/// The sender of XCMP messages.
 	type XCMPMessageSender: XCMPMessageSender<XCMPMessage<Self::AccountId, BalanceOf<Self>>>;
-}
-
-parameter_types! {
-	pub storage ParachainId: cumulus_primitives::ParaId = 150.into();
-}
-
-// This pallet's storage items.
-decl_storage! {
-	trait Store for Module<T: Trait> as ParachainUpgrade {}
-	add_extra_genesis {
-		config(parachain_id): ParaId;
-		build(|config: &Self| {
-			// This is basically a hack to make the parachain id easily configurable.
-			// Could also be done differently, but yeah..
-			ParachainId::set(&config.parachain_id);
-		});
-	}
 }
 
 decl_event! {
