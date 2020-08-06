@@ -52,7 +52,20 @@ Or, start a staging chain with detailed logging:
 RUST_LOG=debug RUST_BACKTRACE=1 ./target/release/parachain-collator -lruntime=debug --chain staging
 ```
 
-### Multi-Node Local Testnet
+### Local Testnet
+
+Polkadot (rococo-branch):
+```
+./target/release/polkadot build-spec --chain rococo-local --raw --disable-default-bootnode > rococo_local.json
+
+./target/release/polkadot --chain ./rococo_local.json -d cumulus_relay1 --validator --bob --port 50555
+./target/release/polkadot --chain ./rococo_local.json -d cumulus_relay0 --validator --alice --port 50556
+```
+
+Parachain Template:
+```
+./target/release/parachain-collator -- -d local-test --validator --ws-port 9945 --chain ../polkadot/rococo_local.json
+```
 
 If you want to see the multi-node consensus algorithm in action, refer to
 [our Start a Private Network tutorial](https://substrate.dev/docs/en/tutorials/start-a-private-network/).
