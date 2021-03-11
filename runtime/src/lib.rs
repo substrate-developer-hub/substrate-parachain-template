@@ -32,7 +32,7 @@ use xcm_executor::{
 	traits::{IsConcrete, NativeAsset},
 	Config, XcmExecutor,
 };
-use frame_system::limits::{BlockLength, BlockWeights};
+use frame_system::{EnsureRoot, limits::{BlockLength, BlockWeights}};
 
 // A few exports that help ease life for downstream crates.
 #[cfg(any(feature = "std", test))]
@@ -331,6 +331,8 @@ impl cumulus_pallet_xcm_handler::Config for Runtime {
 	type XcmExecutor = XcmExecutor<XcmConfig>;
 	type UpwardMessageSender = ParachainSystem;
 	type HrmpMessageSender = ParachainSystem;
+	type SendXcmOrigin = EnsureRoot<AccountId>;
+	type AccountIdConverter = LocationConverter;
 }
 
 /// Configure the pallet template in pallets/template.
@@ -521,4 +523,4 @@ impl_runtime_apis! {
 	}
 }
 
-cumulus_pallet_parachain_system::register_validate_block!(Block, Executive);
+cumulus_pallet_parachain_system::register_validate_block!(Runtime, Executive);
