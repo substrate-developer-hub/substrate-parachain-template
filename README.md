@@ -45,6 +45,29 @@ Substrate Parachain Template:
 ./target/release/parachain-collator -d local-test --collator --alice --ws-port 9945 --parachain-id 200 -- --chain ../polkadot/rococo_local.json
 ```
 
+### Registering on Local Relay Chain
+
+In order to produce blocks you will need to register the parachain as detailed in the [Substrate Cumulus Worship](https://substrate.dev/cumulus-workshop/#/en/3-parachains/2-register) by going to 
+
+Developer -> sudo -> paraSudoWrapper -> sudoScheduleParaInitialize(id, genesis)
+
+Ensure you set the ParaId to 200 and the parachain: Bool to Yes.
+
+The files you will need are in the `./resources` folder, if you need to build them because you modified the code you can use the following commands
+
+```
+cargo build --release
+# Build the Chain spec
+./target/release/parachain-collator build-spec --disable-default-bootnode > ./resources/template-local-plain.json
+# Build the raw file
+./target/release/parachain-collator build-spec --chain=./resources/template-local-plain.json --raw --disable-default-bootnode > ./resources/template-local.json
+
+
+# export genesis state and wasm
+./target/release/parachain-collator export-genesis-state --parachain-id 200 > ./resources/para-200-genesis
+./target/release/parachain-collator export-genesis-wasm > ./resources/para-200.wasm
+```
+
 ## Learn More
 
 Refer to the upstream
