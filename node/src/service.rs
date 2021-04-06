@@ -12,7 +12,6 @@ use sc_executor::native_executor_instance;
 pub use sc_executor::NativeExecutor;
 use sc_service::{Configuration, PartialComponents, Role, TFullBackend, TFullClient, TaskManager};
 use sc_telemetry::{Telemetry, TelemetryWorker, TelemetryWorkerHandle};
-use sp_core::Pair;
 use sp_runtime::traits::BlakeTwo256;
 use sp_trie::PrefixedMemoryDB;
 use std::sync::Arc;
@@ -61,12 +60,15 @@ pub fn new_partial(
 		)?;
 	let client = Arc::new(client);
 
-	let telemetry_worker_handle = telemetry.as_ref().map(|(worker, _)| worker.handle());
+	let telemetry_worker_handle = telemetry
+		.as_ref()
+		.map(|(worker, _)| worker.handle());
 
-	let telemetry = telemetry.map(|(worker, telemetry)| {
-		task_manager.spawn_handle().spawn("telemetry", worker.run());
-		telemetry
-	});
+	let telemetry = telemetry
+		.map(|(worker, telemetry)| {
+			task_manager.spawn_handle().spawn("telemetry", worker.run());
+			telemetry
+		});
 
 	let registry = config.prometheus_registry();
 
@@ -135,14 +137,14 @@ where
 
 	let polkadot_full_node =
 		cumulus_client_service::build_polkadot_full_node(
-			polkadot_config, 
+			polkadot_config,
 			collator_key.clone(),
 			telemetry_worker_handle,
 		)
-			.map_err(|e| match e {
-				polkadot_service::Error::Sub(x) => x,
-				s => format!("{}", s).into(),
-			})?;
+		.map_err(|e| match e {
+			polkadot_service::Error::Sub(x) => x,
+			s => format!("{}", s).into(),
+		})?;
 
 	let client = params.client.clone();
 	let backend = params.backend.clone();
@@ -168,16 +170,18 @@ where
 			block_announce_validator_builder: Some(Box::new(|_| block_announce_validator)),
 		})?;
 
+	if parachain_config.offchain_worker.enabled {
+		sc_service::build_offchain_workers(
+			&parachain_config,
+			task_manager.spawn_handle(),
+			client.clone(),
+			network.clone(),
+		);
+	}
+
 	let rpc_client = client.clone();
 	let rpc_extensions_builder = Box::new(move |_, _| rpc_ext_builder(rpc_client.clone()));
 
-
-	if parachain_config.offchain_worker.enabled {
-		sc_service::build_offchain_workers(
-			&parachain_config, task_manager.spawn_handle(), client.clone(), network.clone(),
-		);
-	}
-	
 	sc_service::spawn_tasks(sc_service::SpawnTasksParams {
 		on_demand: None,
 		remote_blockchain: None,
