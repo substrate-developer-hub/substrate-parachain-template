@@ -4621,6 +4621,7 @@ dependencies = [
 name = "pallet-template"
 version = "3.0.0"
 dependencies = [
+ "frame-benchmarking",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
@@ -4840,6 +4841,7 @@ dependencies = [
  "parity-scale-codec",
  "polkadot-parachain",
  "serde",
+ "smallvec 1.6.1",
  "sp-api",
  "sp-block-builder",
  "sp-core",

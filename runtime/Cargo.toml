@@ -12,6 +12,10 @@ name = 'parachain-runtime'
 repository = 'https://github.com/substrate-developer-hub/substrate-parachain-template'
 
 version = '2.0.0'
+
+[dependencies]
+smallvec = "1.6.1"
+
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
@@ -170,13 +174,6 @@ git = 'https://github.com/paritytech/substrate.git'
 branch = 'rococo-v1'
 version = '3.0.0'
 
-[dependencies.template]
-default-features = false
-package = 'pallet-template'
-path = '../pallets/template'
-version = '3.0.0'
-
-
 # Cumulus dependencies
 [dependencies.parachain-info]
 default-features = false
@@ -201,66 +198,72 @@ default-features = false
 
 # Polkadot dependencies
 [dependencies.polkadot-parachain]
-git = "https://github.com/paritytech/polkadot"
+git = 'https://github.com/paritytech/polkadot'
 branch = 'rococo-v1'
 default-features = false
 
 [dependencies.xcm]
-git = "https://github.com/paritytech/polkadot"
+git = 'https://github.com/paritytech/polkadot'
 branch = 'rococo-v1'
 default-features = false
 
 [dependencies.xcm-builder]
-git = "https://github.com/paritytech/polkadot"
+git = 'https://github.com/paritytech/polkadot'
 branch = 'rococo-v1'
 default-features = false
 
 [dependencies.xcm-executor]
-git = "https://github.com/paritytech/polkadot"
+git = 'https://github.com/paritytech/polkadot'
 branch = 'rococo-v1'
 default-features = false
+
+[dependencies.template]
+default-features = false
+package = 'pallet-template'
+path = '../pallets/template'
 
 [features]
 default = ['std']
 runtime-benchmarks = [
-    'sp-runtime/runtime-benchmarks',
-    'frame-benchmarking',
-    'frame-support/runtime-benchmarks',
-    'frame-system-benchmarking',
-    'hex-literal',
-    'frame-system/runtime-benchmarks',
-    'pallet-balances/runtime-benchmarks',
-    'pallet-timestamp/runtime-benchmarks',
+	'sp-runtime/runtime-benchmarks',
+	'frame-benchmarking',
+	'frame-support/runtime-benchmarks',
+	'frame-system-benchmarking',
+	'hex-literal',
+	'frame-system/runtime-benchmarks',
+	'pallet-balances/runtime-benchmarks',
+	'pallet-timestamp/runtime-benchmarks',
+	'template/runtime-benchmarks',
 ]
 std = [
-	"codec/std",
-	"serde",
-	"sp-api/std",
-	"sp-std/std",
-	"sp-io/std",
-	"sp-core/std",
-	"sp-runtime/std",
-	"sp-version/std",
-	"sp-offchain/std",
-	"sp-session/std",
-	"sp-block-builder/std",
-	"sp-transaction-pool/std",
-	"sp-inherents/std",
-	"frame-support/std",
-	"frame-executive/std",
-	"frame-system/std",
-	"frame-system-rpc-runtime-api/std",
-	"pallet-balances/std",
-	"pallet-randomness-collective-flip/std",
-	"pallet-timestamp/std",
-	"pallet-sudo/std",
-	"pallet-transaction-payment/std",
-	"pallet-transaction-payment-rpc-runtime-api/std",
-	"parachain-info/std",
-	"cumulus-pallet-parachain-system/std",
-	"cumulus-primitives-core/std",
-	"xcm/std",
-	"xcm-builder/std",
-	"xcm-executor/std",
-	"cumulus-pallet-xcm-handler/std",
+	'codec/std',
+	'serde',
+	'sp-api/std',
+	'sp-std/std',
+	'sp-io/std',
+	'sp-core/std',
+	'sp-runtime/std',
+	'sp-version/std',
+	'sp-offchain/std',
+	'sp-session/std',
+	'sp-block-builder/std',
+	'sp-transaction-pool/std',
+	'sp-inherents/std',
+	'frame-support/std',
+	'frame-executive/std',
+	'frame-system/std',
+	'frame-system-rpc-runtime-api/std',
+	'pallet-balances/std',
+	'pallet-randomness-collective-flip/std',
+	'pallet-timestamp/std',
+	'pallet-sudo/std',
+	'pallet-transaction-payment/std',
+	'parachain-info/std',
+	'cumulus-pallet-parachain-system/std',
+	'cumulus-primitives-core/std',
+	'xcm/std',
+	'xcm-builder/std',
+	'xcm-executor/std',
+	'cumulus-pallet-xcm-handler/std',
+	'template/std',
 ]

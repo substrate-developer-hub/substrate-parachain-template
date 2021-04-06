@@ -1,5 +1,5 @@
-use crate::{Error, mock::*};
-use frame_support::{assert_ok, assert_noop};
+use crate::{mock::*, Error};
+use frame_support::{assert_noop, assert_ok};
 
 #[test]
 fn it_works_for_default_value() {

@@ -265,11 +265,13 @@ pub fn run() -> Result<()> {
 					generate_genesis_block(&config.chain_spec).map_err(|e| format!("{:?}", e))?;
 				let genesis_state = format!("0x{:?}", HexDisplay::from(&block.header().encode()));
 
+				let task_executor = config.task_executor.clone();
 				let polkadot_config = SubstrateCli::create_configuration(
-						&polkadot_cli,
-						&polkadot_cli,
-						config.task_executor.clone()
-					).map_err(|err| format!("Relay chain argument error: {}", err))?;
+					&polkadot_cli,
+					&polkadot_cli,
+					task_executor.clone(),
+				)
+				.map_err(|err| format!("Relay chain argument error: {}", err))?;
 				let collator = cli.run.base.validator || cli.collator;
 
 				info!("Parachain id: {:?}", id);
