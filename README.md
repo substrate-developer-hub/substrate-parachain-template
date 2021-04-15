@@ -38,8 +38,8 @@ git clone git@github.com:paritytech/polkadot.git
 cd polkadot
 git checkout rococo-v1
 
-# build WITH the real-overseer (required) 
-cargo build --release --features real-overseer
+# build polkadot relay chain
+cargo build --release
 
 # generaete the chainspec - note this file MUST be shared with all nodes!
 # Other nodes cannot generate it due to possible non-determanism 
@@ -63,7 +63,7 @@ Open a new terminal, same directory:
 Substrate Parachain Template:
 ```bash
 # NOTE: this command assumes the chain spec is in a directory named polkadot that is a sibling of the working directory
-./target/release/parachain-collator -d local-test --collator --alice --ws-port 9945 --parachain-id 200 -- --chain ../polkadot/rococo_local.json
+./target/release/parachain-collator -d local-test --collator --alice --ws-port 9945 --parachain-id 200 -- --execution wasm --chain ../polkadot/rococo_local.json
 ```
 
 > Note: this chainspec file MUST be shared with all nodes genereated by _one_ validator node and passed around.
@@ -93,7 +93,7 @@ cargo build --release
 # Export genesis state to `./resources files
 ./target/release/parachain-collator export-genesis-state --parachain-id 200 > ./resources/para-200-genesis
 # export runtime wasm
-./target/release/parachain-collator export-genesis-wasm > ./resources/para-200.wasm
+./target/release/parachain-collator export-genesis-wasm > ./resources/para-200-wasm
 ```
 
 #### Register on the Relay with `sudo`
@@ -101,6 +101,8 @@ cargo build --release
 In order to produce blocks you will need to register the parachain as detailed in the [Substrate Cumulus Worship](https://substrate.dev/cumulus-workshop/#/en/3-parachains/2-register) by going to 
 
 `Developer -> sudo -> paraSudoWrapper -> sudoScheduleParaInitialize(id, genesis)`
+
+> Note : When registering to Rococo, ensure you set a ParaId > 1000, below 1000 is meant for system parachains.
 
 Ensure you set the `ParaId to 200` and the `parachain: Bool to Yes`.
 
