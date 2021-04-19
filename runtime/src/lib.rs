@@ -442,7 +442,7 @@ construct_runtime!(
 		PolkadotXcm: pallet_xcm::{Pallet, Call, Event<T>, Origin},
 		CumulusXcm: cumulus_pallet_xcm::{Pallet, Origin},
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
-        TemplatePallet: template::{Pallet, Call, Storage, Event<T>},
+		TemplatePallet: template::{Pallet, Call, Storage, Event<T>},
 	}
 );
 
