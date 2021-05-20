@@ -1,7 +1,6 @@
 [build-dependencies.substrate-wasm-builder]
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '4.0.0'
+branch = 'polkadot-v0.9.1'
 
 [package]
 authors = ['Anonymous']
@@ -23,45 +22,39 @@ targets = ['x86_64-unknown-linux-gnu']
 default-features = false
 features = ['derive']
 package = 'parity-scale-codec'
-version = '2.0.0'
+version = "2.0.0"
 
 [dependencies.frame-benchmarking]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
 optional = true
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.frame-executive]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.frame-support]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.frame-system]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.frame-system-benchmarking]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
 optional = true
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.frame-system-rpc-runtime-api]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.hex-literal]
 optional = true
@@ -70,38 +63,32 @@ version = '0.3.1'
 [dependencies.pallet-balances]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.pallet-randomness-collective-flip]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.pallet-sudo]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.pallet-timestamp]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.pallet-transaction-payment]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.pallet-transaction-payment-rpc-runtime-api]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.serde]
 features = ['derive']
@@ -111,126 +98,114 @@ version = '1.0.119'
 [dependencies.sp-api]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-block-builder]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-core]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-inherents]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-io]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-offchain]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-runtime]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-session]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-std]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-transaction-pool]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.sp-version]
 default-features = false
 git = 'https://github.com/paritytech/substrate.git'
-branch = 'rococo-v1'
-version = '3.0.0'
+branch = 'polkadot-v0.9.1'
 
 # Cumulus dependencies
 [dependencies.parachain-info]
 default-features = false
 git = 'https://github.com/paritytech/cumulus.git'
-branch = 'rococo-v1'
-version = '0.1.0'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.cumulus-pallet-parachain-system]
-git = 'https://github.com/paritytech/cumulus.git'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/cumulus.git'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.cumulus-primitives-core]
-git = 'https://github.com/paritytech/cumulus.git'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/cumulus.git'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.cumulus-pallet-xcm]
-git = 'https://github.com/paritytech/cumulus.git'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/cumulus.git'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.cumulus-pallet-xcmp-queue]
-git = 'https://github.com/paritytech/cumulus.git'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/cumulus.git'
+branch = 'polkadot-v0.9.1'
 
 [dependencies.cumulus-primitives-utility]
-git = 'https://github.com/paritytech/cumulus.git'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/cumulus.git'
+branch = 'polkadot-v0.9.1'
 
 # Polkadot dependencies
 [dependencies.polkadot-parachain]
-git = 'https://github.com/paritytech/polkadot'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/polkadot.git'
+branch = 'release-v0.9.1'
 
 [dependencies.xcm]
-git = 'https://github.com/paritytech/polkadot'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/polkadot.git'
+branch = 'release-v0.9.1'
 
 [dependencies.xcm-builder]
-git = 'https://github.com/paritytech/polkadot'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/polkadot.git'
+branch = 'release-v0.9.1'
 
 [dependencies.xcm-executor]
-git = 'https://github.com/paritytech/polkadot'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/polkadot.git'
+branch = 'release-v0.9.1'
 
 [dependencies.pallet-xcm]
-git = 'https://github.com/paritytech/polkadot'
-branch = 'rococo-v1'
 default-features = false
+git = 'https://github.com/paritytech/polkadot.git'
+branch = 'release-v0.9.1'
 
 [dependencies.template]
 default-features = false
