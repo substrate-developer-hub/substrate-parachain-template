@@ -8,8 +8,12 @@ homepage = 'https://substrate.dev'
 repository = 'https://github.com/substrate-developer-hub/substrate-parachain-template'
 edition = '2018'
 build = 'build.rs'
+
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
+
+[build-dependencies]
+substrate-build-script-utils = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.1' }
 
 [[bin]]
 name = 'parachain-collator'
@@ -35,7 +39,6 @@ parachain-runtime = { path = '../runtime' }
 pallet-transaction-payment-rpc = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.1' }
 
 substrate-frame-rpc-system = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.1' }
-substrate-build-script-utils = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.1' }
 
 frame-benchmarking = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.1' }
 frame-benchmarking-cli = { git = 'https://github.com/paritytech/substrate.git', branch = 'polkadot-v0.9.1' }
