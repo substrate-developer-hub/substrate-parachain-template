@@ -5163,7 +5163,7 @@ dependencies = [
 
 [[package]]
 name = "parachain-collator"
-version = "2.0.0"
+version = "3.0.0"
 dependencies = [
  "cumulus-client-cli",
  "cumulus-client-collator",
@@ -5194,7 +5194,6 @@ dependencies = [
  "sc-keystore",
  "sc-rpc",
  "sc-rpc-api",
- "sc-service",
  "sc-telemetry",
  "sc-tracing",
  "sc-transaction-pool",
@@ -5228,7 +5227,7 @@ dependencies = [
 
 [[package]]
 name = "parachain-runtime"
-version = "2.0.0"
+version = "3.0.0"
 dependencies = [
  "cumulus-pallet-parachain-system",
  "cumulus-pallet-xcm",
