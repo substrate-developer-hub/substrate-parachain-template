@@ -61,14 +61,14 @@ use xcm_builder::{
     SiblingParachainAsNative, SiblingParachainConvertsVia, SignedAccountId32AsNative,
     SovereignSignedViaLocation, EnsureXcmOrigin, AllowUnpaidExecutionFrom, ParentAsSuperuser,
     AllowTopLevelPaidExecutionFrom, TakeWeightCredit, FixedWeightBounds, IsConcrete, NativeAsset,
-    UsingComponents, SignedToAccountId32,
+    UsingComponents,
 };
 use xcm_executor::{Config, XcmExecutor};
-use pallet_xcm::{XcmPassthrough, EnsureXcm, IsMajorityOfBody};
+use pallet_xcm::{EnsureXcm, IsMajorityOfBody};
 use xcm::v0::Xcm;
 
 
-use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
+use sp_core::{OpaqueMetadata};
 use sp_runtime::traits::{
 	IdentifyAccount, Verify,
 };
@@ -76,13 +76,10 @@ use sp_runtime::{
 	MultiSignature,
 };
 
-use sp_std::prelude::*;
 
 // Polkadot imports
 use xcm::v0::{Junction};
-use xcm_builder::{
-	 FixedRateOfConcreteFungible,
-};
+
 // A few exports that help ease life for downstream crates.
 pub use pallet_balances::Call as BalancesCall;
 #[cfg(any(feature = "std", test))]
@@ -490,6 +487,12 @@ impl cumulus_pallet_dmp_queue::Config for Runtime {
     type ExecuteOverweightOrigin = frame_system::EnsureRoot<AccountId>;
 }
 
+
+/// Configure the pallet template in pallets/template.
+impl template::Config for Runtime {
+    type Event = Event;
+}
+
 impl cumulus_ping::Config for Runtime {
     type Event = Event;
     type Origin = Origin;
@@ -506,10 +509,7 @@ parameter_types! {
 	pub const UnitBody: BodyId = BodyId::Unit;
 }
 
-/// Configure the pallet template in pallets/template.
-impl template::Config for Runtime {
-	type Event = Event;
-}
+
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -540,6 +540,7 @@ construct_runtime!(
 		DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 53,
 
 		Spambot: cumulus_ping::{Pallet, Call, Storage, Event<T>} = 99,
+        Template:template::{Pallet,Call,Storage,Event<T>},
 	}
 );
 

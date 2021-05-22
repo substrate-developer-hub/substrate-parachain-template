@@ -77,10 +77,10 @@ cargo build --release
 > Other nodes _cannot_ generate it due to possible non-determinism. 
 
 ```bash
-./target/release/polkadot build-spec\
---chain rococo-local\
---raw\
---disable-default-bootnode\
+./target/release/polkadot build-spec \
+--chain rococo-local \
+--raw \
+--disable-default-bootnode \
 > rococo_local.json
 ```
 
@@ -93,10 +93,10 @@ From the Polkadot working directory:
 ```bash
 # Start Relay `Alice` node
 ./target/release/polkadot\
---chain ./rococo_local.json\
--d cumulus_relay/alice\
---validator\
---alice\
+--chain ./rococo_local.json \
+-d cumulus_relay/alice \
+--validator \
+--alice \
 --port 50555
 ```
 
@@ -105,10 +105,10 @@ Open a new terminal, same directory:
 ```bash
 # Start Relay `Alice` node
 ./target/release/polkadot\
---chain ./rococo_local.json\
--d cumulus_relay/bob\
---validator\
---bob\
+--chain ./rococo_local.json \
+-d cumulus_relay/bob \
+--validator \
+--bob \
 --port 50556
 ```
 Add more nodes as needed, with non-conflicting ports, DB directiories, and validator keys
@@ -121,14 +121,15 @@ From the parachain template working directory:
 ```bash
 # NOTE: this command assumes the chain spec is in a directory named `polkadot`
 # that is at the same level of the template working directory. Change as needed.
-./target/release/parachain-collator\
--d cumulus-parachain/alice\
---collator\
---alice\
---ws-port 9945\
---parachain-id 200\
---\
---execution wasm\
+./target/release/parachain-collator \
+-d cumulus-parachain/alice \
+--collator \
+--alice \
+--force-authoring \
+--ws-port 9945 \
+--parachain-id 200 \
+-- \
+--execution wasm \
 --chain ../polkadot/rococo_local.json
 ```
 
@@ -144,7 +145,7 @@ you modified the code you can use the following commands:
 cargo build --release
 
 # Build the Chain spec
-./target/release/parachain-collator build-spec\
+./target/release/parachain-collator build-spec \
 --disable-default-bootnode > ./resources/template-local-plain.json
 
 # Build the raw file
