@@ -2,7 +2,7 @@
 use std::sync::Arc;
 
 // Local Runtime
-use parachain_runtime::{RuntimeApi, opaque::Block};
+use parachain_runtime::{RuntimeApi, Block};
 
 // Cumulus Imports
 use cumulus_client_consensus_aura::{
@@ -50,7 +50,7 @@ native_executor_instance!(
 ///
 /// Use this macro if you don't actually need the full service, but just the builder in order to
 /// be able to perform chain operations.
-pub fn new_partial(
+pub fn new_partial<RuntimeApi, Executor, BIQ>(
 	config: &Configuration,
 	build_import_queue: BIQ,
 ) -> Result<
@@ -125,12 +125,11 @@ where
 		client.clone(),
 	);
 
-	let import_queue = cumulus_client_consensus_relay_chain::import_queue(
+	let import_queue = build_import_queue(
 		client.clone(),
-		client.clone(),
-		inherent_data_providers.clone(),
-		&task_manager.spawn_essential_handle(),
-		registry.clone(),
+		config,
+		telemetry.as_ref().map(|telemetry| telemetry.handle()),
+		&task_manager,
 	)?;
 
 	let params = PartialComponents {
@@ -140,7 +139,6 @@ where
 		keystore_container,
 		task_manager,
 		transaction_pool,
-		inherent_data_providers,
 		select_chain: (),
 		other: (telemetry, telemetry_worker_handle),
 	};
@@ -152,7 +150,7 @@ where
 ///
 /// This is the actual implementation that is abstract over the executor and the runtime api.
 #[sc_tracing::logging::prefix_logs_with("Parachain")]
-async fn start_node_impl<RB>(
+async fn start_node_impl<RuntimeApi, Executor, RB, BIQ, BIC>(
 	parachain_config: Configuration,
 	collator_key: CollatorPair,
 	polkadot_config: Configuration,
@@ -384,7 +382,7 @@ pub async fn start_node(
 		polkadot_config,
 		id,
 		|_| Default::default(),
-		parachian_build_import_queue,
+		parachain_build_import_queue,
 		|client,
 		 prometheus_registry,
 		 telemetry,
