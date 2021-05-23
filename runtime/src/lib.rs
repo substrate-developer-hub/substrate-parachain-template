@@ -8,13 +8,11 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use sp_api::impl_runtime_apis;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
-use sp_runtime::traits::{
-	AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify,
-};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
+    traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
 	transaction_validity::{TransactionSource, TransactionValidity},
-	ApplyExtrinsicResult, MultiSignature,
+	ApplyExtrinsicResult, MultiSignature
 };
 
 use sp_std::prelude::*;
@@ -24,7 +22,7 @@ use sp_version::RuntimeVersion;
 
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
-    construct_runtime, parameter_types,
+	construct_runtime, parameter_types, match_type,
 	traits::{Randomness, IsInVec, All},
 	weights::{
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
@@ -37,7 +35,7 @@ pub use pallet_balances::Call as BalancesCall;
 pub use pallet_timestamp::Call as TimestampCall;
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
-pub use sp_runtime::{Perbill, Permill};
+pub use sp_runtime::{MultiAddress, Perbill, Permill};
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 
 // Polkadot & XCM imports
@@ -51,7 +49,7 @@ use xcm_builder::{
 	UsingComponents, SignedToAccountId32,
 };
 use xcm_executor::{Config, XcmExecutor};
-use pallet_xcm::{XcmPassthrough, EnsureXcm, IsMajorityOfBody};
+use pallet_xcm::XcmPassthrough;
 use xcm::v0::Xcm;
 
 
@@ -385,7 +383,7 @@ parameter_types! {
 	// One XCM operation is 1_000_000 weight - almost certainly a conservative estimate.
 	pub UnitWeightCost: Weight = 1_000_000;
 	// One UNIT buys 1 second of weight.
-	pub const WeightPrice: (MultiLocation, u128) = (X1(Parent), ROC);
+	pub const WeightPrice: (MultiLocation, u128) = (X1(Parent), UNIT);
 }
 
 match_type! {
@@ -401,7 +399,6 @@ pub type Barrier = (
 	// ^^^ Parent & its unit plurality gets free execution
 );
 
-
 pub struct XcmConfig;
 impl Config for XcmConfig {
 	type Call = Call;
@@ -414,7 +411,7 @@ impl Config for XcmConfig {
 	type LocationInverter = LocationInverter<Ancestry>;
 	type Barrier = Barrier;
 	type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
-	type Trader = FixedRateOfConcreteFungible<WeightPrice>;
+	type Trader = UsingComponents<IdentityFee<Balance>, RococoLocation, AccountId, Balances, ()>;
 	type ResponseHandler = ();	// Don't handle responses for now.
 }
 
@@ -546,9 +543,9 @@ impl_runtime_apis! {
             data.check_extrinsics(&block)
         }
 
-        fn random_seed() -> <Block as BlockT>::Hash {
-            RandomnessCollectiveFlip::random_seed().0
-        }
+        // fn random_seed() -> <Block as BlockT>::Hash {
+        //     RandomnessCollectiveFlip::random_seed().0
+        // }
     }
 
     impl sp_transaction_pool::runtime_api::TaggedTransactionQueue<Block> for Runtime {
@@ -566,17 +563,17 @@ impl_runtime_apis! {
         }
     }
 
-    impl sp_session::SessionKeys<Block> for Runtime {
+	impl sp_session::SessionKeys<Block> for Runtime {
 		fn decode_session_keys(
 			encoded: Vec<u8>,
-		) -> Option<Vec<(Vec<u8>, sp_core::crypto::KeyTypeId)>> {
-			SessionKeys::decode_into_raw_public_keys(&encoded)
+		) -> Option<Vec<(Vec<u8>, KeyTypeId)>> {
+			opaque::SessionKeys::decode_into_raw_public_keys(&encoded)
 		}
 
 		fn generate_session_keys(seed: Option<Vec<u8>>) -> Vec<u8> {
-			SessionKeys::generate(seed)
+			opaque::SessionKeys::generate(seed)
 		}
-    }
+	}
 
     impl sp_consensus_aura::AuraApi<Block, AuraId> for Runtime {
 		fn slot_duration() -> sp_consensus_aura::SlotDuration {
