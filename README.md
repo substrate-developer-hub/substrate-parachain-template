@@ -27,35 +27,7 @@ build the
 cargo build --release
 ```
 
-## Run A Collator Node
-
-### Rococo Relay Chain Testnet
-
---- 
-### _IS THIS TEMPLATE ROCOCO COMPATIBLE?_
-> :white_check_mark: **Yes!** :white_check_mark:
->
-> As of 5/5/2021 
----
-
-Rococo is Parity's official relay chain testnet for connecting cumulus-based parathreads
-and parachains.
-
-**See the [Cumulus Workshop](https://substrate.dev/cumulus-workshop/) for the latest instructions**
-**to register a parathread/parachain on Rococo**
-
-> **IMPORTANT NOTE:** you _must_ use the _same_ commit for cumulus and polkadot `rococo-v1` branch
-> to build your parachain against to be compatible!!! You _must_ test locally registering your
-> parachain successfully before you attempt to connect to rococo!
-
-- **[Polkadot `rococo-v1` branch](https://github.com/paritytech/polkadot/tree/rococo-v1)**
-- **[Cumulus `rococo-v1` branch](https://github.com/paritytech/cumulus/tree/rococo-v1)**
-
-This network is under _constant development_ - so expect to need to follow progress and update
-your parachains in lock step with the rococo changes if you wish to connect to the network.
-
-Do join the [rococo matrix chat room](https://matrix.to/#/#rococo:matrix.parity.io) to ask
-questions and connect with the rococo teams.
+## Connect a Collator Node to a Relay Chain 
 
 ### Local Relay Chain Testnet
 
@@ -63,10 +35,10 @@ To operate a parathread or parachain, you _must_ connect to a relay chain.
 
 #### Relay Chain Network (Validators)
 
-Clone and build the Polkadot (**`rococo-v1` branch**):
+Clone and build Polkadot (**at the correct commit for your relay chain**):
 ```bash
 # Get a fresh clone, or `cd` to where you have polkadot already:
-git clone -b rococo-v1 --depth 1 https://github.com:paritytech/polkadot.git
+git clone -b <YOUR RELAY CHAIN BRANCH OR RELEASE TAG> --depth 1 https://github.com:paritytech/polkadot.git
 cd polkadot
 cargo build --release
 ```
@@ -77,11 +49,11 @@ cargo build --release
 > Other nodes _cannot_ generate it due to possible non-determinism. 
 
 ```bash
-./target/release/polkadot build-spec\
---chain rococo-local\
---raw\
---disable-default-bootnode\
-> rococo_local.json
+./target/release/polkadot build-spec \
+--chain westend-local \
+--raw \
+--disable-default-bootnode \
+> westend_local.json
 ```
 
 ##### Start Relay Chain Node(s)
@@ -92,11 +64,11 @@ collator you intend to connect!
 From the Polkadot working directory:
 ```bash
 # Start Relay `Alice` node
-./target/release/polkadot\
---chain ./rococo_local.json\
--d cumulus_relay/alice\
---validator\
---alice\
+./target/release/polkadot \
+--chain ./westend_local.json \
+-d /tmp/relay/alice \
+--validator \
+--alice \
 --port 50555
 ```
 
@@ -104,35 +76,35 @@ Open a new terminal, same directory:
 
 ```bash
 # Start Relay `Alice` node
-./target/release/polkadot\
---chain ./rococo_local.json\
--d cumulus_relay/bob\
---validator\
---bob\
+./target/release/polkadot \
+--chain ./westend_local.json \
+-d /tmp/relay/bob \
+--validator \
+--bob \
 --port 50556
 ```
-Add more nodes as needed, with non-conflicting ports, DB directiories, and validator keys
+Add more nodes as needed, with non-conflicting ports, DB directories, and validator keys
 (`--charlie`, `--dave`, etc.).
 
-#### Parachain Nodes (Collators)
+##### Reserve a ParaID
 
-From the parachain template working directory:
+To connect to a relay chain, you must first _reserve a `ParaId` for your parathread that will 
+become a parachain. To do this, you _must_ have currency available on an account on that network
+in sufficient amount to reserve an ID. This is 20 "units" on the testnets, check for the amount
+on your relay chain. The relay chain will increment starting at `2000` for all chains connecting
+that are not "systems parachains" that use a different method to obtain a `ParaId`.
 
-```bash
-# NOTE: this command assumes the chain spec is in a directory named `polkadot`
-# that is at the same level of the template working directory. Change as needed.
-./target/release/parachain-collator\
--d cumulus-parachain/alice\
---collator\
---alice\
---ws-port 9945\
---parachain-id 200\
---\
---execution wasm\
---chain ../polkadot/rococo_local.json
-```
+The easiest way to reserve your `ParaId` this is via the
+[Polkadot Apps UI](https://polkadot.js.org/apps/?rpc=ws%3A%2F%2F127.0.0.1%3A9944#/parachains/parathreads)
+under the Parachains -> Parathreads tab and use the `+ ParaID` button.
 
-### Registering on Local Relay Chain
+> You will need to connect to a _relay chain node_ to submit this extrinsic!
+> In testnets, your ParaId will be 2000 for your first parathread registration.
+
+In this example flow, we will use the **`Charlie` development account** where we have funds available. 
+Once you submit this extrinsic successfully, you can start your collators.
+
+### Parachain Network
 
 #### Export the Parachain Genesis and Runtime
 
@@ -143,8 +115,11 @@ you modified the code you can use the following commands:
 # Build the parachain node (from it's top level dir)
 cargo build --release
 
+# Place to store files we need
+mkdir resources 
+
 # Build the Chain spec
-./target/release/parachain-collator build-spec\
+./target/release/parachain-collator build-spec \
 --disable-default-bootnode > ./resources/template-local-plain.json
 
 # Build the raw file
@@ -154,13 +129,35 @@ cargo build --release
 
 
 # Export genesis state to `./resources files
-./target/release/parachain-collator export-genesis-state --parachain-id 200 > ./resources/para-200-genesis
+# Assumes ParaId = 2000 . Change as needed.
+./target/release/parachain-collator export-genesis-state --parachain-id 2000 > ./resources/para-2000-genesis
 # export runtime wasm
-./target/release/parachain-collator export-genesis-wasm > ./resources/para-200-wasm
+./target/release/parachain-collator export-genesis-wasm > ./resources/para-2000-wasm
 ```
 
-> Note: we have set the `para_ID = 200` here, this _must_ be unique for all parathreads/chains on the
-> relay chain you register with.
+> Note: we have set the `para_ID = 2000` here, this _must_ be unique for all parathreads/chains on the
+> relay chain you register with. You _must_ reserve this first on the relay chain!
+
+#### Start Parachain Nodes (Collators)
+
+From the parachain template working directory:
+
+```bash
+# NOTE: this command assumes the chain spec is in a directory named `polkadot`
+# that is at the same level of the template working directory. Change as needed.
+#
+# It also assumes a ParaId oof 2000. Change as needed.
+./target/release/parachain-collator \
+-d /tmp/parachain/alice \
+--collator \
+--alice \
+--force-authoring \
+--ws-port 9945 \
+--parachain-id 2000 \
+-- \
+--execution wasm \
+--chain ../polkadot/westend_local.json
+```
 
 #### Register on the Relay with `sudo`
 
@@ -170,7 +167,7 @@ by going to:
 
 `Developer -> sudo -> paraSudoWrapper -> sudoScheduleParaInitialize(id, genesis)`
 
-Ensure you set the `ParaId to 200` and the `parachain: Bool to Yes`.
+Ensure you set the `ParaId to 2000` and the `parachain: Bool to Yes`.
 
 The files you will need are in the `./resources` folder, you just created.
 
@@ -202,6 +199,33 @@ reporting _parachian_ blocks:
 ``` 
 
 > Note the delay here! It may take some time for your relaychain to enter a new era.
+
+### Rococo & Westend Testnet Relay Chains
+
+--- 
+### _IS THIS TEMPLATE ROCOCO & WESTEND COMPATIBLE?_
+> :white_check_mark: **Yes!** :white_check_mark:
+>
+> As of 5/23/2021 
+> Note: Polkadot Release v0.9.2 did not update the rococo runtime version, but did do so for westend.
+---
+
+Rococo is Parity's official relay chain testnet for connecting cumulus-based parathreads
+and parachains.
+
+**See the [Cumulus Workshop](https://substrate.dev/cumulus-workshop/) for the latest instructions**
+**to register a parathread/parachain on a ralay chain**
+
+> **IMPORTANT NOTE:** you _must_ use the _same_ commit for cumulus and polkadot the present runtime
+> for the network you are connecting to uses to be compatible!!!
+> You _must_ test locally registering your parachain successfully before you attempt to connect to
+> any running relay chain network!
+
+These networks are under _constant development_ - so expect to need to follow progress and update
+your parachains in lock step with the testnet changes if you wish to connect to the network.
+
+Do join the [rococo matrix chat room](https://matrix.to/#/#rococo:matrix.parity.io) to ask
+questions and connect with the parachain building teams.
 
 ## Learn More
 
