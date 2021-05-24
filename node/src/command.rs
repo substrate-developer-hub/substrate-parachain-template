@@ -86,7 +86,7 @@ impl SubstrateCli for RelayChainCli {
 		"Parachain Collator Template\n\nThe command-line arguments provided first will be \
 		passed to the parachain node, while the arguments provided after -- will be passed \
 		to the relaychain node.\n\n\
-		rococo-collator [parachain-args] -- [relaychain-args]"
+		parachain-collator [parachain-args] -- [relaychain-args]"
 			.into()
 	}
 

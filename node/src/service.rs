@@ -1,8 +1,8 @@
 // std
 use std::sync::Arc;
 
-// Local Runtime
-use parachain_runtime::{RuntimeApi, Block};
+// Local Runtime Types
+use parachain_runtime::{RuntimeApi, Block, BlockNumber, Header, Hash};
 
 // Cumulus Imports
 use cumulus_client_consensus_aura::{
@@ -31,13 +31,6 @@ use sp_runtime::traits::BlakeTwo256;
 use substrate_prometheus_endpoint::Registry;
 
 pub use sc_executor::NativeExecutor;
-
-
-// Overrides for types
-type BlockNumber = u32;
-type Header = sp_runtime::generic::Header<BlockNumber, sp_runtime::traits::BlakeTwo256>;
-pub type Block = sp_runtime::generic::Block<Header, sp_runtime::OpaqueExtrinsic>;
-type Hash = sp_core::H256;
 
 // Native executor instance.
 native_executor_instance!(
@@ -293,9 +286,8 @@ where
 			client: client.clone(),
 			task_manager: &mut task_manager,
 			collator_key,
-			relay_chain_full_node: relay_chain_full_node,
+			relay_chain_full_node,
 			spawner,
-			backend,
 			parachain_consensus,
 		};
 
