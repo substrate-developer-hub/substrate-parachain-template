@@ -2,7 +2,7 @@
 use std::sync::Arc;
 
 // Local Runtime Types
-use parachain_runtime::{RuntimeApi, Block, BlockNumber, Header, Hash};
+use parachain_runtime::RuntimeApi;
 
 // Cumulus Imports
 use cumulus_client_consensus_aura::{
@@ -20,6 +20,7 @@ use polkadot_primitives::v1::CollatorPair;
 
 // Substrate Imports
 use sc_client_api::ExecutorProvider;
+pub use sc_executor::NativeExecutor;
 use sc_executor::native_executor_instance;
 use sc_network::NetworkService;
 use sc_service::{Configuration, PartialComponents, Role, TFullBackend, TFullClient, TaskManager};
@@ -30,13 +31,18 @@ use sp_keystore::SyncCryptoStorePtr;
 use sp_runtime::traits::BlakeTwo256;
 use substrate_prometheus_endpoint::Registry;
 
-pub use sc_executor::NativeExecutor;
+// Runtime type overrides
+type BlockNumber = u32;
+type Header = sp_runtime::generic::Header<BlockNumber, sp_runtime::traits::BlakeTwo256>;
+pub type Block = sp_runtime::generic::Block<Header, sp_runtime::OpaqueExtrinsic>;
+type Hash = sp_core::H256;
 
 // Native executor instance.
 native_executor_instance!(
-	pub Executor,
+	pub ParachainRuntimeExecutor,
 	parachain_runtime::api::dispatch,
 	parachain_runtime::native_version,
+	frame_benchmarking::benchmarking::HostFunctions,
 );
 
 /// Starts a `ServiceBuilder` for a full service.
@@ -100,15 +106,12 @@ where
 		)?;
 	let client = Arc::new(client);
 
-	let telemetry_worker_handle = telemetry
-		.as_ref()
-		.map(|(worker, _)| worker.handle());
+	let telemetry_worker_handle = telemetry.as_ref().map(|(worker, _)| worker.handle());
 
-	let telemetry = telemetry
-		.map(|(worker, telemetry)| {
-			task_manager.spawn_handle().spawn("telemetry", worker.run());
-			telemetry
-		});
+	let telemetry = telemetry.map(|(worker, telemetry)| {
+		task_manager.spawn_handle().spawn("telemetry", worker.run());
+		telemetry
+	});
 
 	let transaction_pool = sc_transaction_pool::BasicPool::new_full(
 		config.transaction_pool.clone(),
@@ -203,16 +206,15 @@ where
 	let params = new_partial::<RuntimeApi, Executor, BIQ>(&parachain_config, build_import_queue)?;
 	let (mut telemetry, telemetry_worker_handle) = params.other;
 
-	let relay_chain_full_node =
-		cumulus_client_service::build_polkadot_full_node(
-			polkadot_config,
-			collator_key.clone(),
-			telemetry_worker_handle,
-		)
-		.map_err(|e| match e {
-			polkadot_service::Error::Sub(x) => x,
-			s => format!("{}", s).into(),
-		})?;
+	let relay_chain_full_node = cumulus_client_service::build_polkadot_full_node(
+		polkadot_config,
+		collator_key.clone(),
+		telemetry_worker_handle,
+	)
+	.map_err(|e| match e {
+		polkadot_service::Error::Sub(x) => x,
+		s => format!("{}", s).into(),
+	})?;
 
 	let client = params.client.clone();
 	let backend = params.backend.clone();
@@ -276,7 +278,7 @@ where
 			params.keystore_container.sync_keystore(),
 			force_authoring,
 		)?;
-		
+
 		let spawner = task_manager.spawn_handle();
 
 		let params = StartCollatorParams {
@@ -311,14 +313,14 @@ where
 
 /// Build the import queue for the the parachain runtime.
 pub fn parachain_build_import_queue(
-	client: Arc<TFullClient<Block, RuntimeApi, Executor>>,
+	client: Arc<TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>>,
 	config: &Configuration,
 	telemetry: Option<TelemetryHandle>,
 	task_manager: &TaskManager,
 ) -> Result<
 	sp_consensus::DefaultImportQueue<
 		Block,
-		TFullClient<Block, RuntimeApi, Executor>,
+		TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>,
 	>,
 	sc_service::Error,
 > {
@@ -367,8 +369,8 @@ pub async fn start_node(
 	collator_key: CollatorPair,
 	polkadot_config: Configuration,
 	id: ParaId,
-) -> sc_service::error::Result<(TaskManager, Arc<TFullClient<Block, RuntimeApi, Executor>>)> {
-	start_node_impl::<RuntimeApi, Executor, _, _, _>(
+) -> sc_service::error::Result<(TaskManager, Arc<TFullClient<Block, RuntimeApi, ParachainRuntimeExecutor>>)> {
+	start_node_impl::<RuntimeApi, ParachainRuntimeExecutor, _, _, _>(
 		parachain_config,
 		collator_key,
 		polkadot_config,
@@ -396,7 +398,6 @@ pub async fn start_node(
 
 			let relay_chain_backend = relay_chain_node.backend.clone();
 			let relay_chain_client = relay_chain_node.client.clone();
-
 			Ok(build_aura_consensus::<
 				sp_consensus_aura::sr25519::AuthorityPair,
 				_,
