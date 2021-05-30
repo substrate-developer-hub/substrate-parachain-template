@@ -32,13 +32,9 @@ cargo build --release
 ### Local Relay Chain Testnet
 
 To operate a parathread or parachain, you _must_ connect to a relay chain. You have a few choices,
-the most typical for rapid testing and the lowest barrier to entry is the Rococo network.
-**Keep in mind, you need to configure the  specific relay chain you will connect to in your**
-**collator `chain_spec.rs`**. In the following examples, we will use a `rococo-dev` relay network.
-
-> You can choose from any pre-set runtime chain spec in the Polkadot repo looking in the 
-> `cli/src/command.rs` file or generate your own and use that custom chain spec.
-> See the [Cumulus Workshop](https://substrate.dev/cumulus-workshop/) for how.
+the most typical for testing is a local development Rococo network, then moving to the live testnet.
+**Keep in mind, you need to configure the specific relay chain you will connect to in your**
+**collator `chain_spec.rs`**. In the following examples, we will use a `rococo-local` relay network.
 
 #### Relay Chain Network (Validators)
 
@@ -57,10 +53,10 @@ cargo build --release
 
 ```bash
 ./target/release/polkadot build-spec \
---chain rococo-dev \
+--chain rococo-local \
 --raw \
 --disable-default-bootnode \
-> rococo_dev.json
+> rococo_local.json
 ```
 
 ##### Start Relay Chain Node(s)
@@ -72,7 +68,7 @@ From the Polkadot working directory:
 ```bash
 # Start Relay `Alice` node
 ./target/release/polkadot \
---chain ./rococo_dev.json \
+--chain ./rococo_local.json \
 -d /tmp/relay/alice \
 --validator \
 --alice \
@@ -84,7 +80,7 @@ Open a new terminal, same directory:
 ```bash
 # Start Relay `Alice` node
 ./target/release/polkadot \
---chain ./rococo_dev.json \
+--chain ./rococo_local.json \
 -d /tmp/relay/bob \
 --validator \
 --bob \
@@ -113,6 +109,26 @@ Once you submit this extrinsic successfully, you can start your collators.
 
 ### Parachain Network
 
+#### Select the Correct Relay Chain
+
+To operate your parachain, it _must_ connect to the _correct_ relay chain. 
+**Keep in mind, you need to configure the specific relay chain you will connect to in your**
+**collator `chain_spec.rs`**. Specifically you pass the command for the network you need in
+the `Extensions` section of your `ChainSpec::from_genesis(` section:
+
+```rust
+    Extensions {
+			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
+			para_id: id.into(),
+		},
+```
+
+> You can choose from any pre-set runtime chain spec in the Polkadot repo looking in the 
+> `cli/src/command.rs` and `node/service/src/chain_spec.rs` files or generate your own and use
+> that. See the [Cumulus Workshop](https://substrate.dev/cumulus-workshop/) for how.
+
+In the following examples, we use the `rococo-local` relay network we setup in the last section.
+
 #### Export the Parachain Genesis and Runtime
 
 The files you will need to register we will generate in a `./resources` folder, to build them because
@@ -127,13 +143,12 @@ mkdir -p resources
 
 # Build the Chain spec
 ./target/release/parachain-collator build-spec \
---disable-default-bootnode > ./resources/template-dev-plain.json
+--disable-default-bootnode > ./resources/template-local-plain.json
 
 # Build the raw file
 ./target/release/parachain-collator build-spec \
---chain=./resources/template-dev-plain.json \
---raw --disable-default-bootnode > ./resources/template-dev.json
-
+--chain=./resources/template-local-plain.json \
+--raw --disable-default-bootnode > ./resources/template-local.json
 
 # Export genesis state to `./resources files
 # Assumes ParaId = 2000 . Change as needed.
@@ -163,7 +178,7 @@ From the parachain template working directory:
 --parachain-id 2000 \
 -- \
 --execution wasm \
---chain ../polkadot/rococo_dev.json
+--chain ../polkadot/rococo_local.json
 ```
 
 #### Register on the Relay with `sudo`
