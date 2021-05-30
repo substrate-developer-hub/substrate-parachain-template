@@ -31,7 +31,14 @@ cargo build --release
 
 ### Local Relay Chain Testnet
 
-To operate a parathread or parachain, you _must_ connect to a relay chain.
+To operate a parathread or parachain, you _must_ connect to a relay chain. You have a few choices,
+the most typical for rapid testing and the lowest barrier to entry is the Rococo network.
+**Keep in mind, you need to configure the  specific relay chain you will connect to in your**
+**collator `chain_spec.rs`**. In the following examples, we will use a `rococo-dev` relay network.
+
+> You can choose from any pre-set runtime chain spec in the Polkadot repo looking in the 
+> `cli/src/command.rs` file or generate your own and use that custom chain spec.
+> See the [Cumulus Workshop](https://substrate.dev/cumulus-workshop/) for how.
 
 #### Relay Chain Network (Validators)
 
@@ -43,17 +50,17 @@ cd polkadot
 cargo build --release
 ```
 
-##### Generaete the chainspec
+##### Generate the chainspec
 
 > NOTE: this file _must_ be generated on a _single node_ and then the file shared with all nodes!
 > Other nodes _cannot_ generate it due to possible non-determinism. 
 
 ```bash
 ./target/release/polkadot build-spec \
---chain westend-local \
+--chain rococo-dev \
 --raw \
 --disable-default-bootnode \
-> westend_local.json
+> rococo_dev.json
 ```
 
 ##### Start Relay Chain Node(s)
@@ -65,7 +72,7 @@ From the Polkadot working directory:
 ```bash
 # Start Relay `Alice` node
 ./target/release/polkadot \
---chain ./westend_local.json \
+--chain ./rococo_dev.json \
 -d /tmp/relay/alice \
 --validator \
 --alice \
@@ -77,7 +84,7 @@ Open a new terminal, same directory:
 ```bash
 # Start Relay `Alice` node
 ./target/release/polkadot \
---chain ./westend_local.json \
+--chain ./rococo_dev.json \
 -d /tmp/relay/bob \
 --validator \
 --bob \
@@ -116,16 +123,16 @@ you modified the code you can use the following commands:
 cargo build --release
 
 # Place to store files we need
-mkdir resources 
+mkdir -p resources 
 
 # Build the Chain spec
 ./target/release/parachain-collator build-spec \
---disable-default-bootnode > ./resources/template-local-plain.json
+--disable-default-bootnode > ./resources/template-dev-plain.json
 
 # Build the raw file
 ./target/release/parachain-collator build-spec \
---chain=./resources/template-local-plain.json \
---raw --disable-default-bootnode > ./resources/template-local.json
+--chain=./resources/template-dev-plain.json \
+--raw --disable-default-bootnode > ./resources/template-dev.json
 
 
 # Export genesis state to `./resources files
@@ -156,7 +163,7 @@ From the parachain template working directory:
 --parachain-id 2000 \
 -- \
 --execution wasm \
---chain ../polkadot/westend_local.json
+--chain ../polkadot/rococo_dev.json
 ```
 
 #### Register on the Relay with `sudo`
@@ -202,24 +209,26 @@ reporting _parachian_ blocks:
 
 ### Rococo & Westend Testnet Relay Chains
 
---- 
-### _IS THIS TEMPLATE ROCOCO & WESTEND COMPATIBLE?_
-> :white_check_mark: **Yes!** :white_check_mark:
->
-> As of 5/23/2021 
-> Note: Polkadot Release v0.9.2 did not update the rococo runtime version, but did do so for westend.
 ---
 
-Rococo is Parity's official relay chain testnet for connecting cumulus-based parathreads
-and parachains.
+> _IS THIS TEMPLATE ROCOCO & WESTEND COMPATIBLE?_
+> **Yes!**
+> As of 30/05/2021 for Polkadot runtimes v0.9.3
+
+---
 
 **See the [Cumulus Workshop](https://substrate.dev/cumulus-workshop/) for the latest instructions**
-**to register a parathread/parachain on a ralay chain**
+**to register a parathread/parachain on a relay chain**
 
 > **IMPORTANT NOTE:** you _must_ use the _same_ commit for cumulus and polkadot the present runtime
 > for the network you are connecting to uses to be compatible!!!
 > You _must_ test locally registering your parachain successfully before you attempt to connect to
 > any running relay chain network!
+
+- **Rococo** is generally more unstable getting tests incorporated first, and reset often!
+  - Join in the [Rococo Faucet](https://matrix.to/#/#rococo-faucet:matrix.org) to get some funds.
+- **Westend** is more stable, and is not reset except when absolutely needed.
+  - Join in the [Westend Faucet](https://matrix.to/#/#westend_faucet:matrix.org) to get some funds.
 
 These networks are under _constant development_ - so expect to need to follow progress and update
 your parachains in lock step with the testnet changes if you wish to connect to the network.
