@@ -78,7 +78,7 @@ From the Polkadot working directory:
 Open a new terminal, same directory: 
 
 ```bash
-# Start Relay `Alice` node
+# Start Relay `Bob` node
 ./target/release/polkadot \
 --chain ./rococo_local.json \
 -d /tmp/relay/bob \
@@ -227,7 +227,9 @@ reporting _parachian_ blocks:
 ---
 
 > _IS THIS TEMPLATE ROCOCO & WESTEND COMPATIBLE?_
+> 
 > **Yes!**
+> 
 > As of 30/05/2021 for Polkadot runtimes v0.9.3
 
 ---
