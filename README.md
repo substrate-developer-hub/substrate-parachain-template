@@ -240,6 +240,10 @@ reporting _parachian_ blocks:
 > You _must_ test locally registering your parachain successfully before you attempt to connect to
 > any running relay chain network!
 
+Find `Chain spec` files to connect to live networks [here](https://github.com/paritytech/polkadot/tree/master/node/service/res).
+You want to be sure to use the correct git release tag in these files, as they change from time
+to time and _must_ match the live network! 
+
 - **Rococo** is generally more unstable getting tests incorporated first, and reset often!
   - Join in the [Rococo Faucet](https://matrix.to/#/#rococo-faucet:matrix.org) to get some funds.
 - **Westend** is more stable, and is not reset except when absolutely needed.
