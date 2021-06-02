@@ -56,6 +56,8 @@ pub use sp_runtime::{Perbill, Permill, Perquintill};
 
 /// Import the template pallet.
 pub use template;
+pub use verifier;
+pub use tradestorage;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -424,6 +426,14 @@ impl template::Config for Runtime {
 	type Event = Event;
 }
 
+impl verifier::Config for Runtime {
+	type Event = Event;
+}
+
+impl tradestorage::Config for Runtime {
+	type Event = Event;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -443,6 +453,8 @@ construct_runtime!(
 		CumulusXcm: cumulus_pallet_xcm::{Pallet, Origin},
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
 		TemplatePallet: template::{Pallet, Call, Storage, Event<T>},
+        VerifierPallet: verifier::{Pallet, Call, Storage, Event<T>},
+		Tradestorage: tradestorage::{Pallet, Call, Storage, Event<T>},
 	}
 );
 

@@ -237,6 +237,16 @@ default-features = false
 package = 'pallet-template'
 path = '../pallets/template'
 
+[dependencies.verifier]
+default-features = false
+package = 'pallet-verifier'
+path = '../pallets/verifier'
+
+[dependencies.tradestorage]
+default-features = false
+package = 'pallet-tradestorage'
+path = '../pallets/tradestorage'
+
 [features]
 default = ['std']
 runtime-benchmarks = [
