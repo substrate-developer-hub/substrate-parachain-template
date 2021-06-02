@@ -78,8 +78,11 @@ pub mod verifier {
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 	    #[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-        fn verify_match(origin:OriginFor<T>, bid: Bid, offer: Offer) -> DispatchResult {
+        fn verify_match(origin:OriginFor<T>, bid_uuid:u32, bid_market_uuid:Vec<u8>, bid_asset_uuid:Vec<u8>, bid_max_energy:u32, bid_time_slot:Vec<u8>,
+            offer_uuid:u32, offer_market_uuid:Vec<u8>, offer_asset_uuid:Vec<u8>, offer_energy_type:Vec<u8>, offer_max_energy:u32, offer_time_slot:Vec<u8>) -> DispatchResult {
             let _who = ensure_root(origin)?;
+            let bid = Bid {uuid:bid_uuid , market_uuid:Some(bid_market_uuid.clone()), asset_uuid:Some(bid_asset_uuid.clone()), max_energy:bid_max_energy, time_slot:bid_time_slot.clone()};
+            let offer = Offer {uuid: offer_uuid, market_uuid:offer_market_uuid.clone(), asset_uuid:offer_asset_uuid.clone(), energy_type:offer_energy_type.clone(), max_energy:offer_max_energy, time_slot:offer_time_slot.clone()};
             let offer_clone = offer.clone();
             assert_eq!(bid.uuid, offer_clone.uuid);
             assert_eq!(bid.market_uuid, Some(offer_clone.market_uuid));
