@@ -1,3 +1,5 @@
+//! Substrate Parachain Node Template
+
 #![warn(missing_docs)]
 
 mod chain_spec;
