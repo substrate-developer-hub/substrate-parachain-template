@@ -39,6 +39,7 @@ the most typical for testing is a local development Rococo network, then moving 
 #### Relay Chain Network (Validators)
 
 Clone and build Polkadot (**at the correct commit for your relay chain**):
+
 ```bash
 # Get a fresh clone, or `cd` to where you have polkadot already:
 git clone -b <YOUR RELAY CHAIN BRANCH OR RELEASE TAG> --depth 1 https://github.com:paritytech/polkadot.git
@@ -65,6 +66,7 @@ You should have a minimum of 2 running full _validator_ nodes on your relay chai
 collator you intend to connect!
 
 From the Polkadot working directory:
+
 ```bash
 # Start Relay `Alice` node
 ./target/release/polkadot \
@@ -86,13 +88,14 @@ Open a new terminal, same directory:
 --bob \
 --port 50556
 ```
+
 Add more nodes as needed, with non-conflicting ports, DB directories, and validator keys
 (`--charlie`, `--dave`, etc.).
 
 ##### Reserve a ParaID
 
 To connect to a relay chain, you must first _reserve a `ParaId` for your parathread that will
-become a parachain. To do this, you _must_ have currency available on an account on that network
+become a parachain. To do this, you \_must_ have currency available on an account on that network
 in sufficient amount to reserve an ID. This is 20 "units" on the testnets, check for the amount
 on your relay chain. The relay chain will increment starting at `2000` for all chains connecting
 that are not "systems parachains" that use a different method to obtain a `ParaId`.
@@ -182,6 +185,7 @@ From the parachain template working directory:
 ```
 
 _Output:_
+
 ```bash
 2021-05-30 16:57:39 Parachain Collator Template
 2021-05-30 16:57:39 ✌️  version 3.0.0-acce183-x86_64-linux-gnu
@@ -237,8 +241,7 @@ Ensure you set the `ParaId to 2000` and the `parachain: Bool to Yes`.
 
 The files you will need are in the `./resources` folder, you just created.
 
-> Note : When registering to the public Rococo testnet, ensure you set a **unique**
-> `para_id` > 1000, below 1000 is reserved _exclusively_ for system parachains.
+> Note : When registering to the public Rococo testnet, ensure you set a **unique** > `para_id` > 1000, below 1000 is reserved _exclusively_ for system parachains.
 
 #### Restart the Parachain (Collator) and Wait...
 
@@ -305,7 +308,7 @@ reporting _parachian_ blocks:
 >
 > **Yes!**
 >
-> As of 30/05/2021 for Polkadot runtimes v0.9.3
+> As of 22/06/2021 for Polkadot runtimes v0.9.6
 
 ---
 
@@ -321,10 +324,10 @@ Find `Chain spec` files to connect to live networks [here](https://github.com/pa
 You want to be sure to use the correct git release tag in these files, as they change from time
 to time and _must_ match the live network!
 
-- **Rococo** is generally more unstable getting tests incorporated first, and reset often!
-	- Join in the [Rococo Faucet](https://matrix.to/#/#rococo-faucet:matrix.org) to get some funds.
-- **Westend** is more stable, and is not reset except when absolutely needed.
-	- Join in the [Westend Faucet](https://matrix.to/#/#westend_faucet:matrix.org) to get some funds.
+-   **Rococo** is generally more unstable getting tests incorporated first, and reset often!
+    -   Join in the [Rococo Faucet](https://matrix.to/#/#rococo-faucet:matrix.org) to get some funds.
+-   **Westend** is more stable, and is not reset except when absolutely needed.
+    -   Join in the [Westend Faucet](https://matrix.to/#/#westend_faucet:matrix.org) to get some funds.
 
 These networks are under _constant development_ - so expect to need to follow progress and update
 your parachains in lock step with the testnet changes if you wish to connect to the network.
@@ -334,12 +337,12 @@ questions and connect with the parachain building teams.
 
 ## Learn More
 
-- More detailed instructions to use Cumulus parachains are found in the
-[Cumulus Worship](https://substrate.dev/cumulus-workshop/#/en/3-parachains/2-register)
-- Refer to the upstream
-[Substrate Developer Hub Node Template](https://github.com/substrate-developer-hub/substrate-node-template)
-to learn more about the structure of this project, the capabilities it encapsulates and the way in
-which those capabilities are implemented.
-- You can learn more about
-[The Path of Parachain Block](https://polkadot.network/the-path-of-a-parachain-block/) on the
-official Polkadot Blog.
+-   More detailed instructions to use Cumulus parachains are found in the
+    [Cumulus Worship](https://substrate.dev/cumulus-workshop/#/en/3-parachains/2-register)
+-   Refer to the upstream
+    [Substrate Developer Hub Node Template](https://github.com/substrate-developer-hub/substrate-node-template)
+    to learn more about the structure of this project, the capabilities it encapsulates and the way in
+    which those capabilities are implemented.
+-   You can learn more about
+    [The Path of Parachain Block](https://polkadot.network/the-path-of-a-parachain-block/) on the
+    official Polkadot Blog.
