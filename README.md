@@ -239,7 +239,7 @@ _Output:_
 2021-05-30 16:58:00 [Relaychain] ✨ Imported #10 (0xc9c9…1ca3)
 ```
 
-You see messages are from both a relaychain node and a parachain node. This is because a relay chain
+You see messages are from both a relay chain node and a parachain node. This is because a relay chain
 light client is also run next to the parachain collator.
 
 ### Parachain Registration

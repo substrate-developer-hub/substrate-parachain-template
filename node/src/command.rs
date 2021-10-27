@@ -43,8 +43,8 @@ impl SubstrateCli for Cli {
 		format!(
 			"Parachain Collator Template\n\nThe command-line arguments provided first will be \
 		passed to the parachain node, while the arguments provided after -- will be passed \
-		to the relaychain node.\n\n\
-		{} [parachain-args] -- [relaychain-args]",
+		to the relay chain node.\n\n\
+		{} [parachain-args] -- [relay_chain-args]",
 			Self::executable_name()
 		)
 	}
@@ -82,8 +82,8 @@ impl SubstrateCli for RelayChainCli {
 	fn description() -> String {
 		"Parachain Collator Template\n\nThe command-line arguments provided first will be \
 		passed to the parachain node, while the arguments provided after -- will be passed \
-		to the relaychain node.\n\n\
-		parachain-collator [parachain-args] -- [relaychain-args]"
+		to the relay chain node.\n\n\
+		parachain-collator [parachain-args] -- [relay_chain-args]"
 			.into()
 	}
 
@@ -171,7 +171,7 @@ pub fn run() -> Result<()> {
 			runner.sync_run(|config| {
 				let polkadot_cli = RelayChainCli::new(
 					&config,
-					[RelayChainCli::executable_name()].iter().chain(cli.relaychain_args.iter()),
+					std::iter::once(RelayChainCli::executable_name()).chain(cli.relaychain_args.iter()),
 				);
 
 				let polkadot_config = SubstrateCli::create_configuration(
@@ -253,7 +253,7 @@ pub fn run() -> Result<()> {
 
 				let polkadot_cli = RelayChainCli::new(
 					&config,
-					[RelayChainCli::executable_name()].iter().chain(cli.relaychain_args.iter()),
+					std::iter::once(RelayChainCli::executable_name()).chain(cli.relaychain_args.iter()),
 				);
 
 				let id = ParaId::from(cli.run.parachain_id.or(para_id).unwrap_or(2000));
