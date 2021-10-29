@@ -194,12 +194,13 @@ fn testnet_genesis(
 		},
 		session: parachain_template_runtime::SessionConfig {
 			keys: invulnerables
-				.iter()
+				.into_iter()
 				.map(|(acc, aura)| {
 					(
 						acc.clone(),                 // account id
 						acc,                         // validator id
 						template_session_keys(aura), // session keys
+					)
 				})
 				.collect(),
 		},
