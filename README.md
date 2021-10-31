@@ -246,7 +246,7 @@ light client is also run next to the parachain collator.
 
 Now that you have two relay chain nodes, and a parachain node accompanied with a relay chain light
 client running, the next step is to register the parachain in the relay chain with the following
-steps (for detail, refer to the [Substrate Cumulus Worship](https://substrate.dev/cumulus-workshop/#/en/3-parachains/2-register)):
+steps (for detail, refer to the [Substrate Cumulus Workshop](https://docs.substrate.io/tutorials/v3/cumulus/start-relay/#/en/3-parachains/2-register)):
 
 -   Goto [Polkadot Apps UI](https://polkadot.js.org/apps/#/explorer), connecting to your relay chain.
 
