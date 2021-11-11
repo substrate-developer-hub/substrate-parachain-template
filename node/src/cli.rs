@@ -46,18 +46,12 @@ pub struct ExportGenesisStateCommand {
 	#[structopt(parse(from_os_str))]
 	pub output: Option<PathBuf>,
 
-	/// Id of the parachain this state is for.
-	///
-	/// Default: 100
-	#[structopt(long, conflicts_with = "chain")]
-	pub parachain_id: Option<u32>,
-
 	/// Write output in binary. Default is to write in hex.
 	#[structopt(short, long)]
 	pub raw: bool,
 
 	/// The name of the chain for that the genesis state should be exported.
-	#[structopt(long, conflicts_with = "parachain-id")]
+	#[structopt(long)]
 	pub chain: Option<String>,
 }
 
@@ -92,7 +86,7 @@ pub struct Cli {
 
 	/// Relay chain arguments
 	#[structopt(raw = true)]
-	pub relaychain_args: Vec<String>,
+	pub relay_chain_args: Vec<String>,
 }
 
 #[derive(Debug)]

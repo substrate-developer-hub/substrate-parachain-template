@@ -58,7 +58,7 @@ pub fn template_session_keys(keys: AuraId) -> parachain_template_runtime::Sessio
 	parachain_template_runtime::SessionKeys { aura: keys }
 }
 
-pub fn development_config(id: ParaId) -> ChainSpec {
+pub fn development_config() -> ChainSpec {
 	// Give your base currency a unit name and decimal places
 	let mut properties = sc_chain_spec::Properties::new();
 	properties.insert("tokenSymbol".into(), "UNIT".into());
@@ -107,12 +107,12 @@ pub fn development_config(id: ParaId) -> ChainSpec {
 		None,
 		Extensions {
 			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-			para_id: id.into(),
+			para_id: 1000,
 		},
 	)
 }
 
-pub fn local_testnet_config(id: ParaId) -> ChainSpec {
+pub fn local_testnet_config() -> ChainSpec {
 	// Give your base currency a unit name and decimal places
 	let mut properties = sc_chain_spec::Properties::new();
 	properties.insert("tokenSymbol".into(), "UNIT".into());
@@ -166,7 +166,7 @@ pub fn local_testnet_config(id: ParaId) -> ChainSpec {
 		// Extensions
 		Extensions {
 			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-			para_id: id.into(),
+			para_id: 1000,
 		},
 	)
 }
