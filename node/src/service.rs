@@ -26,6 +26,7 @@ use sc_network::NetworkService;
 use sc_service::{Configuration, PartialComponents, Role, TFullBackend, TFullClient, TaskManager};
 use sc_telemetry::{Telemetry, TelemetryHandle, TelemetryWorker, TelemetryWorkerHandle};
 use sp_api::ConstructRuntimeApi;
+use sp_consensus::SlotData;
 use sp_keystore::SyncCryptoStorePtr;
 use sp_runtime::traits::BlakeTwo256;
 use substrate_prometheus_endpoint::Registry;
@@ -382,9 +383,9 @@ pub fn parachain_build_import_queue(
 			let time = sp_timestamp::InherentDataProvider::from_system_time();
 
 			let slot =
-				sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
+				sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_duration(
 					*time,
-					slot_duration,
+					slot_duration.slot_duration(),
 				);
 
 			Ok((time, slot))
@@ -447,9 +448,9 @@ pub async fn start_parachain_node(
 							let time = sp_timestamp::InherentDataProvider::from_system_time();
 
 							let slot =
-						sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
+						sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_duration(
 							*time,
-							slot_duration,
+							slot_duration.slot_duration(),
 						);
 
 							let parachain_inherent = parachain_inherent.ok_or_else(|| {
