@@ -22,7 +22,7 @@ serde = { version = "1.0.132", features = ["derive"] }
 hex-literal = "0.3.4"
 jsonrpc-core = "18.0.0"
 
-# Local Dependencies
+# Local
 parachain-template-runtime = { path = "../runtime" }
 
 # Substrate
