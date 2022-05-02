@@ -3,6 +3,13 @@
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
+
+use cumulus_pallet_xcm::{Origin as CumulusOrigin};
+use cumulus_primitives_core::ParaId;
+use frame_system::Config as SystemConfig;
+use sp_std::prelude::*;
+use xcm::latest::prelude::*;
+
 pub use pallet::*;
 
 #[cfg(test)]
@@ -14,92 +21,121 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+mod xcm_test;
+
 #[frame_support::pallet]
 pub mod pallet {
-	use frame_support::{dispatch::DispatchResultWithPostInfo, pallet_prelude::*};
+	use super::*;
+	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 
-	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
-		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
+		type Origin: From<<Self as SystemConfig>::Origin>
+			+ Into<Result<CumulusOrigin, <Self as Config>::Origin>>;
+
+		type Call: From<Call<Self>> + Encode;
+
+		type XcmSender: SendXcm;
 	}
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
 	pub struct Pallet<T>(_);
 
-	// The pallet's runtime storage items.
-	// https://docs.substrate.io/v3/runtime/storage
-	#[pallet::storage]
-	#[pallet::getter(fn something)]
-	// Learn more about declaring storage items:
-	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-	pub type Something<T> = StorageValue<_, u32>;
-
 	// Pallets use events to inform users when important changes are made.
 	// https://docs.substrate.io/v3/runtime/events-and-errors
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-		/// Event documentation should end with an array that provides descriptive names for event
-		/// parameters. [something, who]
-		SomethingStored(u32, T::AccountId),
+		/// [call]
+		CallSent(Vec<u8>),
+		/// [error, paraId, call]
+		ErrorSendingCall(SendError, ParaId, Vec<u8>),
 	}
 
-	// Errors inform users that something went wrong.
 	#[pallet::error]
-	pub enum Error<T> {
-		/// Error names should be descriptive.
-		NoneValue,
-		/// Errors should have helpful documentation associated with them.
-		StorageOverflow,
-	}
+	pub enum Error<T> {}
 
-	#[pallet::hooks]
-	impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
-
-	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
-	// These functions materialize as "extrinsics", which are often compared to transactions.
-	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		/// An example dispatchable that takes a singles value as a parameter, writes the value to
-		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResultWithPostInfo {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://docs.substrate.io/v3/runtime/origins
-			let who = ensure_signed(origin)?;
+		pub fn send_remark_with_event(origin: OriginFor<T>, para: ParaId, message: Vec<u8>) -> DispatchResult {
+			ensure_root(origin)?;
 
-			// Update storage.
-			<Something<T>>::put(something);
+			let call_name = b"remark_with_event".to_vec();
+			let remark = xcm_test::OakChainCallBuilder::remark_with_event(message);
 
-			// Emit an event.
-			Self::deposit_event(Event::SomethingStored(something, who));
-			// Return a successful DispatchResultWithPostInfo
-			Ok(().into())
+			match T::XcmSender::send_xcm(
+				(1, Junction::Parachain(para.into())),
+				Xcm(vec![Transact {
+					origin_type: OriginKind::SovereignAccount,
+					require_weight_at_most: 10_000_000_000,
+					call: remark.encode().into(),
+				}]),
+			) {
+				Ok(()) => {
+					Self::deposit_event(Event::CallSent(call_name));
+				},
+				Err(e) => {
+					Self::deposit_event(Event::ErrorSendingCall(e, para, call_name));
+				}
+			};
+			Ok(())
 		}
 
-		/// An example dispatchable that may throw a custom error.
-		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-		pub fn cause_error(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
-			let _who = ensure_signed(origin)?;
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+		pub fn send_schedule_notify(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64, message: Vec<u8>) -> DispatchResult {
+			ensure_root(origin)?;
 
-			// Read a value from storage.
-			match <Something<T>>::get() {
-				// Return an error if the value has not been set.
-				None => Err(Error::<T>::NoneValue)?,
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-					// Update the value in storage with the incremented result.
-					<Something<T>>::put(new);
-					Ok(().into())
+			let call_name = b"automation_time_schedule_notify".to_vec();
+			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify(provided_id, time, message);
+
+			match T::XcmSender::send_xcm(
+				(1, Junction::Parachain(para.into())),
+				Xcm(vec![Transact {
+					origin_type: OriginKind::SovereignAccount,
+					require_weight_at_most: 10_000_000_000,
+					call: call.encode().into(),
+				}]),
+			) {
+				Ok(()) => {
+					Self::deposit_event(Event::CallSent(call_name));
 				},
-			}
+				Err(e) => {
+					Self::deposit_event(Event::ErrorSendingCall(e, para, call_name));
+				}
+			};
+			Ok(())
+		}
+
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+		pub fn send_schedule_xcmp(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64) -> DispatchResult {
+			ensure_root(origin)?;
+
+			let call_name = b"automation_time_schedule".to_vec();
+
+			let inner_call = xcm_test::TestChainCallBuilder::remark_with_event(b"heya".to_vec());
+			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_xcmp(2001.into(), provided_id, time, inner_call.encode());
+
+			match T::XcmSender::send_xcm(
+				(1, Junction::Parachain(para.into())),
+				Xcm(vec![Transact {
+					origin_type: OriginKind::SovereignAccount,
+					require_weight_at_most: 10_000_000_000,
+					call: call.encode().into(),
+				}]),
+			) {
+				Ok(()) => {
+					Self::deposit_event(Event::CallSent(call_name));
+				},
+				Err(e) => {
+					Self::deposit_event(Event::ErrorSendingCall(e, para, call_name));
+				}
+			};
+			Ok(())
 		}
 	}
 }
