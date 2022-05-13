@@ -91,7 +91,7 @@ pub mod pallet {
 			ensure_root(origin)?;
 
 			let call_name = b"automation_time_schedule_notify".to_vec();
-			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify(provided_id, time, message);
+			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify(provided_id, vec![time], message);
 
 			match T::XcmSender::send_xcm(
 				(1, Junction::Parachain(para.into())),
