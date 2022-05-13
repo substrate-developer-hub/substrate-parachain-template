@@ -31,6 +31,9 @@ frame-system = { git = "https://github.com/paritytech/substrate", default-featur
 [dev-dependencies]
 serde = { version = "1.0.132" }
 
+# OAK
+pallet-automation-time = { path = "../../../OAK-blockchain/pallets/automation-time", default-features = false }
+
 # Substrate
 sp-core = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.19" }
 sp-io = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.19" }
@@ -45,5 +48,6 @@ std = [
 	"frame-benchmarking/std",
 	"frame-support/std",
 	"frame-system/std",
+	"pallet-automation-time/std"
 ]
 try-runtime = [ "frame-support/try-runtime" ]

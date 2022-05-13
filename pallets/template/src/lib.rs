@@ -25,7 +25,9 @@ mod xcm_test;
 
 #[frame_support::pallet]
 pub mod pallet {
-	use super::*;
+	use crate::xcm_test::NeuChainCall;
+
+use super::*;
 	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 
@@ -39,6 +41,7 @@ pub mod pallet {
 		type Call: From<Call<Self>> + Encode;
 
 		type XcmSender: SendXcm;
+		type WeightInfo: pallet_automation_time::WeightInfo;
 	}
 
 	#[pallet::pallet]
@@ -119,14 +122,37 @@ pub mod pallet {
 
 			let inner_call = xcm_test::TestChainCallBuilder::remark_with_event(b"heya".to_vec());
 			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_xcmp(2001.into(), provided_id, time, inner_call.encode());
+			use xcm::GetWeight;
+
+			
+			let transact_instruction = Transact::<()> {
+				origin_type: OriginKind::SovereignAccount,
+				require_weight_at_most: 10_000_000_000,
+				call: call.encode().into(),
+			};
+			let asset = MultiAsset {
+				id: Concrete(MultiLocation::here()),
+				fun: Fungibility::Fungible(10_000_000),
+			};
+			let buy_execution_instruction = BuyExecution::<()> {
+				fees: asset.clone(),
+				weight_limit: Limited(10_000_000),
+			};
+			let multiassets: MultiAssets = vec![asset.clone()].into();
+			let withdraw_asset_instruction = WithdrawAsset::<()>(multiassets);
+			let xcm_instruction_set = Xcm(vec![
+				withdraw_asset_instruction,
+				buy_execution_instruction,
+				transact_instruction,
+			]);
+			// use pallet_xcm_benchmarks_generic::WeightInfo as XcmGeneric;
+			// for instruction in xcm_instruction_set.0.iter() {
+			// 	println!("{}", instruction.weight());
+			// }
 
 			match T::XcmSender::send_xcm(
 				(1, Junction::Parachain(para.into())),
-				Xcm(vec![Transact {
-					origin_type: OriginKind::SovereignAccount,
-					require_weight_at_most: 10_000_000_000,
-					call: call.encode().into(),
-				}]),
+				xcm_instruction_set,
 			) {
 				Ok(()) => {
 					Self::deposit_event(Event::CallSent(call_name));

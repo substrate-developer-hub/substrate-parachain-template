@@ -457,6 +457,7 @@ impl pallet_template::Config for Runtime {
 	type Origin = Origin;
 	type Call = Call;
 	type XcmSender = XcmRouter;
+	// type WeightInfo = pallet_automation_time::weights::AutomationWeight<Runtime>;
 }
 
 impl pallet_sudo::Config for Runtime {
