@@ -52,6 +52,7 @@ use weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight};
 // XCM Imports
 use xcm::latest::prelude::BodyId;
 use xcm_executor::XcmExecutor;
+use xcm_builder::FixedWeightBounds;
 
 /// Import the template pallet.
 pub use pallet_template;
@@ -451,6 +452,11 @@ impl pallet_collator_selection::Config for Runtime {
 	type WeightInfo = ();
 }
 
+parameter_types! {
+	pub const MaxInstructions: u32 = 100;
+	pub const UnitWeightCost: Weight = 1_000_000_000;
+}
+
 /// Configure the pallet template in pallets/template.
 impl pallet_template::Config for Runtime {
 	type Event = Event;
@@ -458,6 +464,7 @@ impl pallet_template::Config for Runtime {
 	type Call = Call;
 	type XcmSender = XcmRouter;
 	// type WeightInfo = pallet_automation_time::weights::AutomationWeight<Runtime>;
+	type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
 }
 
 impl pallet_sudo::Config for Runtime {
