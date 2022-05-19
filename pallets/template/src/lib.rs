@@ -25,7 +25,6 @@ mod xcm_test;
 
 #[frame_support::pallet]
 pub mod pallet {
-	use crate::xcm_test::NeuChainCall;
 	use xcm_executor::traits::WeightBounds;
 
 use super::*;
@@ -102,12 +101,12 @@ use super::*;
 
 			let transact_instruction = Transact::<()> {
 				origin_type: OriginKind::SovereignAccount,
-				require_weight_at_most: 1_000_000_000,
+				require_weight_at_most: 6_000_000_000,
 				call: call.encode().into(),
 			};
 			let asset = MultiAsset {
 				id: Concrete(MultiLocation::here()),
-				fun: Fungibility::Fungible(2_000_000_000),
+				fun: Fungibility::Fungible(7_000_000_000),
 			};
 			let buy_execution_weight_instruction = BuyExecution::<()> {
 				fees: asset.clone(),
