@@ -14,7 +14,7 @@ use sp_api::impl_runtime_apis;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
-	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
+	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify, Convert},
 	transaction_validity::{TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult, MultiSignature,
 };
@@ -50,7 +50,7 @@ use polkadot_runtime_common::{BlockHashCount, SlowAdjustingFeeUpdate};
 use weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight};
 
 // XCM Imports
-use xcm::latest::prelude::BodyId;
+use xcm::latest::prelude::*;
 use xcm_executor::XcmExecutor;
 use xcm_builder::FixedWeightBounds;
 
@@ -452,6 +452,13 @@ impl pallet_collator_selection::Config for Runtime {
 	type WeightInfo = ();
 }
 
+pub struct AccountIdToMultiLocation;
+impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
+		fn convert(account: AccountId) -> MultiLocation {
+				X1(AccountId32 { network: NetworkId::Any, id: account.into() }).into()
+		}
+}
+
 parameter_types! {
 	pub const MaxInstructions: u32 = 100;
 	pub const UnitWeightCost: Weight = 1_000_000_000;
@@ -463,8 +470,10 @@ impl pallet_template::Config for Runtime {
 	type Origin = Origin;
 	type Call = Call;
 	type XcmSender = XcmRouter;
+	type XcmExecutor = XcmExecutor<XcmConfig>;
 	// type WeightInfo = pallet_automation_time::weights::AutomationWeight<Runtime>;
 	type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
+	type AccountIdToMultiLocation = AccountIdToMultiLocation;
 }
 
 impl pallet_sudo::Config for Runtime {
