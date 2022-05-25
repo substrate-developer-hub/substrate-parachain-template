@@ -18,6 +18,7 @@ use sp_runtime::{
 	transaction_validity::{TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult, MultiSignature,
 };
+use oak_xcm;
 
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -459,6 +460,13 @@ impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
 		}
 }
 
+pub struct AccountIdToU8Vec;
+impl Convert<AccountId, [u8; 32]> for AccountIdToU8Vec {
+		fn convert(_account: AccountId) -> [u8; 32] {
+				[0u8; 32]
+		}
+}
+
 parameter_types! {
 	pub const MaxInstructions: u32 = 100;
 	pub const UnitWeightCost: Weight = 1_000_000_000;
@@ -474,6 +482,9 @@ impl pallet_template::Config for Runtime {
 	// type WeightInfo = pallet_automation_time::weights::AutomationWeight<Runtime>;
 	type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
 	type AccountIdToMultiLocation = AccountIdToMultiLocation;
+	type AccountIdToU8Vec = AccountIdToU8Vec;
+	type OakXcmInstructionGenerator =
+		oak_xcm::OakXcmInstructionGenerator<AccountIdToU8Vec, FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>>;
 }
 
 impl pallet_sudo::Config for Runtime {

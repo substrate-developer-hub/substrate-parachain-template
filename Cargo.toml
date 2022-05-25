@@ -7,4 +7,6 @@ members = [
 	"pallets/*",
 	"pallets/template",
 	"runtime",
+	"libs/*",
+	"libs/oak_xcm",
 ]

@@ -5014,6 +5014,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "oak_xcm"
+version = "0.1.0"
+dependencies = [
+ "cumulus-primitives-core",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-automation-time",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+ "xcm",
+ "xcm-builder",
+ "xcm-executor",
+]
+
+[[package]]
 name = "object"
 version = "0.27.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5861,6 +5883,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
+ "oak_xcm",
  "pallet-automation-time",
  "parity-scale-codec",
  "scale-info",
@@ -6138,6 +6161,7 @@ dependencies = [
  "frame-try-runtime",
  "hex-literal",
  "log",
+ "oak_xcm",
  "pallet-aura",
  "pallet-authorship",
  "pallet-balances",

@@ -1,31 +1,23 @@
 [package]
-name = "pallet-template"
-authors = ["Anonymous"]
-description = "FRAME pallet template for defining custom runtime logic."
+name = "oak_xcm"
 version = "0.1.0"
-license = "Unlicense"
-homepage = "https://substrate.io"
-repository = "https://github.com/paritytech/substrate/"
 edition = "2021"
 
-[package.metadata.docs.rs]
-targets = ["x86_64-unknown-linux-gnu"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.0.0", features = ["derive"], default-features = false }
 scale-info = { version = "2.0.0", default-features = false, features = ["derive"] }
 log = { version = "0.4.16", default-features = false }
 
-# Local
-oak_xcm = { path = "../../libs/oak_xcm", default-features = false }
-
 # Cumulus
-cumulus-pallet-xcm = { git = "https://github.com/paritytech/cumulus", default-features = false,  branch = "polkadot-v0.9.19" }
 cumulus-primitives-core = { git = "https://github.com/paritytech/cumulus", default-features = false,  branch = "polkadot-v0.9.19" }
 
 #Polkadot
 xcm = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.19" }
 xcm-executor = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.19" }
+xcm-builder = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.19" }
 
 # Substrate
 sp-std = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.19" }

@@ -11,6 +11,7 @@ use sp_std::prelude::*;
 use xcm::latest::prelude::*;
 
 pub use pallet::*;
+use oak_xcm::{XcmInstructionGenerator};
 
 #[cfg(test)]
 mod mock;
@@ -45,9 +46,12 @@ use super::*;
 		type XcmSender: SendXcm;
 		type XcmExecutor: ExecuteXcm<<Self as pallet::Config>::Call>;
 		// type WeightInfo: pallet_automation_time::WeightInfo;
-		type AccountIdToMultiLocation: Convert<Self::AccountId, MultiLocation>;
-
+		
 		type Weigher: WeightBounds<<Self as pallet::Config>::Call>;
+		
+		type AccountIdToMultiLocation: Convert<Self::AccountId, MultiLocation>;
+		type AccountIdToU8Vec: Convert<Self::AccountId, [u8; 32]>;
+		type OakXcmInstructionGenerator: XcmInstructionGenerator<Self>;
 	}
 
 	#[pallet::pallet]
@@ -174,6 +178,39 @@ use super::*;
 		}
 
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+		pub fn send_schedule_with_crate(
+			origin: OriginFor<T>,
+			para: ParaId,
+			provided_id: Vec<u8>,
+			time: u64,
+			message: Vec<u8>,
+			refund_account: T::AccountId
+		) -> DispatchResult {
+			ensure_root(origin)?;
+			let call_name = b"automation_time_schedule_notify".to_vec();
+			let transact_instruction = T::OakXcmInstructionGenerator::create_schedule_notify_instruction(provided_id, vec![time], message);
+			let asset = MultiAsset {
+				id: Concrete(MultiLocation::here()),
+				fun: Fungibility::Fungible(7_000_000_000),
+			};
+			
+			let xcm_instruction_set = T::OakXcmInstructionGenerator::create_xcm_instruction_set(asset, transact_instruction, refund_account);
+
+			match T::XcmSender::send_xcm(
+				(1, Junction::Parachain(para.into())),
+				xcm_instruction_set,
+			) {
+				Ok(()) => {
+					Self::deposit_event(Event::CallSent(call_name));
+				},
+				Err(e) => {
+					Self::deposit_event(Event::ErrorSendingCall(e, para, call_name));
+				}
+			};
+			Ok(())
+		}
+
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
 		pub fn send_schedule_notify_in_unit(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64, message: Vec<u8>) -> DispatchResult {
 			// ensure_root(origin)?;
 			let who = ensure_signed(origin)?;
@@ -215,7 +252,6 @@ use super::*;
 				refund_surplus_instruction.clone(),
 				deposit_asset_instruction.clone(),
 			]);
-
 			let weight = T::Weigher::weight(&mut xcm_instruction_weight_set.clone().into()).unwrap();
 			info!("############# Custom Weight: {:?}", weight);
 
