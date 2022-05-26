@@ -20,6 +20,11 @@ pub enum AutomationTimeCall {
     ScheduleXcmpTask(ParaId, Vec<u8>, u64, Vec<u8>),
 }
 
+#[derive(Encode, Decode, RuntimeDebug)]
+pub enum TemplateXCMCall<T: frame_system::Config, BalanceOf> {
+    #[codec(index = 1)]
+    ForceSendBalance(T::AccountId, T::AccountId, BalanceOf),
+}
 
 #[derive(Encode, Decode, RuntimeDebug)]
 pub enum NeuChainCall {
@@ -30,23 +35,34 @@ pub enum NeuChainCall {
 }
 
 #[derive(Encode, Decode, RuntimeDebug)]
-pub enum TestChainCall {
+pub enum TestChainCall<T: frame_system::Config, BalanceOf> {
     #[codec(index = 0)]
     System(SystemCall),
+    #[codec(index = 60)]
+    TemplateXCMCall(TemplateXCMCall<T, BalanceOf>),
 }
 
 pub struct OakChainCallBuilder;
 
 impl OakChainCallBuilder {
-    pub fn remark_with_event(message: Vec<u8>) -> NeuChainCall {
+    pub fn remark_with_event<T: frame_system::Config, BalanceOf>(message: Vec<u8>) -> NeuChainCall {
         NeuChainCall::System(SystemCall::RemarkWithEvent(message))
     }
 
-    pub fn automation_time_schedule_notify(provided_id: Vec<u8>, times: Vec<u64>, message: Vec<u8>) -> NeuChainCall {
+    pub fn automation_time_schedule_notify<T: frame_system::Config, BalanceOf>(
+        provided_id: Vec<u8>,
+        times: Vec<u64>,
+        message: Vec<u8>
+    ) -> NeuChainCall {
         NeuChainCall::AutomationTime(AutomationTimeCall::ScheduleNotifyTask(provided_id, times, message))
     }
 
-    pub fn automation_time_schedule_xcmp(para_id: ParaId, provided_id: Vec<u8>, time: u64, call: Vec<u8>) -> NeuChainCall {
+    pub fn automation_time_schedule_xcmp<T: frame_system::Config, BalanceOf>(
+        para_id: ParaId,
+        provided_id: Vec<u8>,
+        time: u64,
+        call: Vec<u8>
+    ) -> NeuChainCall {
         NeuChainCall::AutomationTime(AutomationTimeCall::ScheduleXcmpTask(para_id, provided_id, time, call))
     }
 }
@@ -54,7 +70,14 @@ impl OakChainCallBuilder {
 pub struct TestChainCallBuilder;
 
 impl TestChainCallBuilder {
-    pub fn remark_with_event(message: Vec<u8>) -> TestChainCall {
+    pub fn remark_with_event<T: frame_system::Config, BalanceOf>(message: Vec<u8>) -> TestChainCall<T, BalanceOf> {
         TestChainCall::System(SystemCall::RemarkWithEvent(message))
+    }
+    pub fn force_send_balance<T: frame_system::Config, BalanceOf>(
+        source: T::AccountId,
+        dest: T::AccountId,
+        value: BalanceOf
+    ) -> TestChainCall<T, BalanceOf> {
+        TestChainCall::TemplateXCMCall(TemplateXCMCall::ForceSendBalance(source, dest, value))
     }
 }

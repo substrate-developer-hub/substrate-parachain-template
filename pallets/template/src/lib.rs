@@ -29,10 +29,13 @@ pub mod pallet {
 	use xcm_executor::traits::WeightBounds;
 
 use super::*;
-	use frame_support::pallet_prelude::*;
+	use frame_support::{pallet_prelude::*, traits::{ExistenceRequirement, Currency}};
 	use frame_system::pallet_prelude::*;
 	use log::info;
 	use sp_runtime::traits::Convert;
+
+	pub type BalanceOf<T> =
+		<<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -52,6 +55,7 @@ use super::*;
 		type AccountIdToMultiLocation: Convert<Self::AccountId, MultiLocation>;
 		type AccountIdToU8Vec: Convert<Self::AccountId, [u8; 32]>;
 		type OakXcmInstructionGenerator: XcmInstructionGenerator<Self>;
+		type Currency: Currency<Self::AccountId>;
 	}
 
 	#[pallet::pallet]
@@ -83,7 +87,7 @@ use super::*;
 			ensure_root(origin)?;
 
 			let call_name = b"remark_with_event".to_vec();
-			let remark = xcm_test::OakChainCallBuilder::remark_with_event(message);
+			let remark = xcm_test::OakChainCallBuilder::remark_with_event::<T, BalanceOf<T>>(message);
 
 			match T::XcmSender::send_xcm(
 				(1, Junction::Parachain(para.into())),
@@ -104,11 +108,23 @@ use super::*;
 		}
 
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+		pub fn force_send_balance(origin: OriginFor<T>, source: T::AccountId, dest: T::AccountId, value: BalanceOf<T>) -> DispatchResult {
+			ensure_root(origin)?;
+			<T as Config>::Currency::transfer(
+				&source,
+				&dest,
+				value,
+				ExistenceRequirement::AllowDeath,
+			)?;
+			Ok(())
+		}
+
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
 		pub fn send_schedule_notify(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64, message: Vec<u8>) -> DispatchResult {
 			ensure_root(origin)?;
 
 			let call_name = b"automation_time_schedule_notify".to_vec();
-			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify(provided_id, vec![time], message);
+			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify::<T, BalanceOf<T>>(provided_id, vec![time], message);
 
 			let transact_instruction = Transact::<()> {
 				origin_type: OriginKind::SovereignAccount,
@@ -211,11 +227,47 @@ use super::*;
 		}
 
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+		pub fn send_schedule_xcmp_with_crate(
+			origin: OriginFor<T>,
+			para: ParaId,
+			provided_id: Vec<u8>,
+			time: u64,
+			source: T::AccountId,
+			dest: T::AccountId,
+			value: BalanceOf<T>,
+		) -> DispatchResult {
+			ensure_root(origin)?;
+			let call_name = b"automation_time_schedule_xcmp_with_crate".to_vec();
+			let inner_call = xcm_test::TestChainCallBuilder::force_send_balance::<T, BalanceOf<T>>(source.clone(), dest, value);
+			let transact_instruction =
+				T::OakXcmInstructionGenerator::create_schedule_xcmp_instruction(para, provided_id, time, inner_call.encode().into());
+			let asset = MultiAsset {
+				id: Concrete(MultiLocation::here()),
+				fun: Fungibility::Fungible(7_000_000_000),
+			};
+
+			let xcm_instruction_set = T::OakXcmInstructionGenerator::create_xcm_instruction_set(asset, transact_instruction, source);
+
+			match T::XcmSender::send_xcm(
+				(1, Junction::Parachain(para.into())),
+				xcm_instruction_set,
+			) {
+				Ok(()) => {
+					Self::deposit_event(Event::CallSent(call_name));
+				},
+				Err(e) => {
+					Self::deposit_event(Event::ErrorSendingCall(e, para, call_name));
+				}
+			};
+			Ok(())
+		}
+
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
 		pub fn send_schedule_notify_in_unit(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64, message: Vec<u8>) -> DispatchResult {
 			// ensure_root(origin)?;
 			let who = ensure_signed(origin)?;
 
-			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify(provided_id, vec![time], message);
+			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify::<T, BalanceOf<T>>(provided_id, vec![time], message);
 
 			let transact_instruction = Transact::<()> {
 				origin_type: OriginKind::SovereignAccount,
@@ -313,10 +365,10 @@ use super::*;
 		pub fn send_schedule_xcmp(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64) -> DispatchResult {
 			ensure_root(origin)?;
 
-			let call_name = b"automation_time_schedule".to_vec();
+			let call_name = b"automation_time_schedule_xcmp".to_vec();
 
-			let inner_call = xcm_test::TestChainCallBuilder::remark_with_event(b"heya".to_vec());
-			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_xcmp(2001.into(), provided_id, time, inner_call.encode());
+			let inner_call = xcm_test::TestChainCallBuilder::remark_with_event::<T, BalanceOf<T>>(b"heya".to_vec());
+			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_xcmp::<T, BalanceOf<T>>(2001.into(), provided_id, time, inner_call.encode());
 
 			let transact_instruction = Transact::<()> {
 				origin_type: OriginKind::SovereignAccount,

@@ -485,6 +485,7 @@ impl pallet_template::Config for Runtime {
 	type AccountIdToU8Vec = AccountIdToU8Vec;
 	type OakXcmInstructionGenerator =
 		oak_xcm::OakXcmInstructionGenerator<AccountIdToU8Vec, FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>>;
+	type Currency = Balances;
 }
 
 impl pallet_sudo::Config for Runtime {
