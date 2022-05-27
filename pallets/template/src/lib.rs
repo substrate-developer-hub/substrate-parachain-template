@@ -109,87 +109,14 @@ use super::*;
 
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
 		pub fn force_send_balance(origin: OriginFor<T>, source: T::AccountId, dest: T::AccountId, value: BalanceOf<T>) -> DispatchResult {
-			ensure_root(origin)?;
+			ensure_signed(origin)?;
+			info!("made it into force send balance, source: {:?}, dest: {:?}, value: {:?}", source, dest, value);
 			<T as Config>::Currency::transfer(
 				&source,
 				&dest,
 				value,
 				ExistenceRequirement::AllowDeath,
 			)?;
-			Ok(())
-		}
-
-		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn send_schedule_notify(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64, message: Vec<u8>) -> DispatchResult {
-			ensure_root(origin)?;
-
-			let call_name = b"automation_time_schedule_notify".to_vec();
-			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify::<T, BalanceOf<T>>(provided_id, vec![time], message);
-
-			let transact_instruction = Transact::<()> {
-				origin_type: OriginKind::SovereignAccount,
-				require_weight_at_most: 6_000_000_000,
-				call: call.encode().into(),
-			};
-			let asset = MultiAsset {
-				id: Concrete(MultiLocation::here()),
-				fun: Fungibility::Fungible(7_000_000_000),
-			};
-			let buy_execution_weight_instruction = BuyExecution::<()> {
-				fees: asset.clone(),
-				weight_limit: Limited(10_000_000),
-			};
-			let multiassets: MultiAssets = vec![asset.clone()].into();
-			let withdraw_asset_instruction = WithdrawAsset::<()>(multiassets);
-
-			let refund_multilocation = MultiLocation {
-				parents: 0,
-				interior: X1(AccountId32 {
-					network: Any,
-					id: [0u8; 32],
-				}),
-			};
-			let refund_surplus_instruction = RefundSurplus::<()>;
-			let deposit_asset_instruction = DepositAsset::<()> {
-				assets: MultiAssetFilter::Wild(All),
-				max_assets: 1,
-				beneficiary: refund_multilocation.clone(),
-			};
-			let xcm_instruction_weight_set = Xcm(vec![
-				withdraw_asset_instruction.clone(),
-				buy_execution_weight_instruction,
-				transact_instruction.clone(),
-				refund_surplus_instruction.clone(),
-				deposit_asset_instruction.clone(),
-			]);
-
-			let weight = T::Weigher::weight(&mut xcm_instruction_weight_set.clone().into()).unwrap();
-			info!("############# Custom Weight: {:?}", weight);
-
-			let buy_execution_instruction = BuyExecution::<()> {
-				fees: asset.clone(),
-				weight_limit: Limited(weight),
-			};
-
-			let xcm_instruction_set = Xcm(vec![
-				withdraw_asset_instruction,
-				buy_execution_instruction,
-				transact_instruction,
-				refund_surplus_instruction,
-				deposit_asset_instruction,
-			]);
-
-			match T::XcmSender::send_xcm(
-				(1, Junction::Parachain(para.into())),
-				xcm_instruction_set,
-			) {
-				Ok(()) => {
-					Self::deposit_event(Event::CallSent(call_name));
-				},
-				Err(e) => {
-					Self::deposit_event(Event::ErrorSendingCall(e, para, call_name));
-				}
-			};
 			Ok(())
 		}
 
@@ -230,6 +157,7 @@ use super::*;
 		pub fn send_schedule_xcmp_with_crate(
 			origin: OriginFor<T>,
 			para: ParaId,
+			para_response_location: ParaId,
 			provided_id: Vec<u8>,
 			time: u64,
 			source: T::AccountId,
@@ -238,9 +166,11 @@ use super::*;
 		) -> DispatchResult {
 			ensure_root(origin)?;
 			let call_name = b"automation_time_schedule_xcmp_with_crate".to_vec();
-			let inner_call = xcm_test::TestChainCallBuilder::force_send_balance::<T, BalanceOf<T>>(source.clone(), dest, value);
+			let inner_call = <T as Config>::Call::from(Call::<T>::force_send_balance { source: source.clone(), dest, value })
+				.encode()
+				.into();
 			let transact_instruction =
-				T::OakXcmInstructionGenerator::create_schedule_xcmp_instruction(para, provided_id, time, inner_call.encode().into());
+				T::OakXcmInstructionGenerator::create_schedule_xcmp_instruction(para_response_location, provided_id, time, inner_call);
 			let asset = MultiAsset {
 				id: Concrete(MultiLocation::here()),
 				fun: Fungibility::Fungible(7_000_000_000),
@@ -262,107 +192,112 @@ use super::*;
 			Ok(())
 		}
 
+		// #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+		// pub fn send_schedule_notify_in_unit(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64, message: Vec<u8>) -> DispatchResult {
+		// 	// ensure_root(origin)?;
+		// 	let who = ensure_signed(origin)?;
+
+		// 	let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify::<T, BalanceOf<T>>(provided_id, vec![time], message);
+
+		// 	let transact_instruction = Transact::<()> {
+		// 		origin_type: OriginKind::SovereignAccount,
+		// 		require_weight_at_most: 1_000_000_000,
+		// 		call: call.encode().into(),
+		// 	};
+		// 	let buy_execution_weight_instruction = BuyExecution::<()> {
+		// 		fees: MultiAsset {
+		// 			id: Concrete(MultiLocation::here()),
+		// 			fun: Fungibility::Fungible(9_600_000_000_000),
+		// 		},
+		// 		weight_limit: Limited(10_000_000),
+		// 	};
+		// 	// let sovereign_account: <T as frame_system::Config>::AccountId = 1;
+		// 	let id = who
+		// 		.using_encoded(|mut d| <[u8; 32]>::decode(&mut d))
+		// 		.map_err(|_| Error::<T>::XcmExecutionFailed)?;
+		// 	let refund_multilocation = MultiLocation {
+		// 		parents: 0,
+		// 		interior: X1(AccountId32 {
+		// 			network: Any,
+		// 			id,
+		// 		}),
+		// 	};
+		// 	let refund_surplus_instruction = RefundSurplus::<()>;
+		// 	let deposit_asset_instruction = DepositAsset::<()> {
+		// 		assets: MultiAssetFilter::Wild(All),
+		// 		max_assets: 1,
+		// 		beneficiary: refund_multilocation.clone(),
+		// 	};
+		// 	let xcm_instruction_weight_set = Xcm(vec![
+		// 		buy_execution_weight_instruction,
+		// 		transact_instruction.clone(),
+		// 		refund_surplus_instruction.clone(),
+		// 		deposit_asset_instruction.clone(),
+		// 	]);
+		// 	let weight = T::Weigher::weight(&mut xcm_instruction_weight_set.clone().into()).unwrap();
+		// 	info!("############# Custom Weight: {:?}", weight);
+
+		// 	let buy_execution_instruction = BuyExecution::<()> {
+		// 		fees: MultiAsset {
+		// 			id: Concrete(MultiLocation {
+		// 				parents: 1,
+		// 				interior: X1(Parachain(2001)),
+		// 			}),
+		// 			fun: Fungibility::Fungible(9_600_000_000_000),
+		// 		},
+		// 		weight_limit: Limited(weight),
+		// 	};
+
+		// 	let recipient_xcm_instruction_set = Xcm(vec![
+		// 		buy_execution_instruction,
+		// 		transact_instruction,
+		// 		refund_surplus_instruction,
+		// 		deposit_asset_instruction,
+		// 	]);
+
+		// 	let multiassets: MultiAssets = vec![MultiAsset {
+		// 		id: Concrete(MultiLocation::here()),
+		// 		fun: Fungibility::Fungible(9_700_000_000_000),
+		// 	}].into();
+		// 	let withdraw_asset_instruction = WithdrawAsset::<()>(multiassets);
+		// 	let internal_instruction_set = Xcm(vec![
+		// 		withdraw_asset_instruction,
+		// 		DepositReserveAsset {
+		// 			assets: MultiAssetFilter::Definite(vec![MultiAsset {
+		// 				id: Concrete(MultiLocation::here()),
+		// 				fun: Fungibility::Fungible(9_700_000_000_000),
+		// 			}].into()),
+		// 			max_assets: 1,
+		// 			dest: MultiLocation {
+		// 				parents: 1,
+		// 				interior: X1(Parachain(para.into())),
+		// 			},
+		// 			xcm: recipient_xcm_instruction_set,
+		// 		}
+		// 	]);
+
+		// 	let xcm_origin = T::AccountIdToMultiLocation::convert(who);
+
+		// 	T::XcmExecutor::execute_xcm_in_credit(
+		// 		xcm_origin,
+		// 		internal_instruction_set.into(),
+		// 		2_000_000_000,
+		// 		2_000_000_000
+		// 	).ensure_complete()
+		// 	.map_err(|error| {
+		// 		log::error!("Failed execute transfer message with {:?}", error);
+		// 		Error::<T>::XcmExecutionFailed
+		// 	})?;
+		// 	Ok(())
+		// }
+
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn send_schedule_notify_in_unit(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64, message: Vec<u8>) -> DispatchResult {
-			// ensure_root(origin)?;
-			let who = ensure_signed(origin)?;
-
-			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_notify::<T, BalanceOf<T>>(provided_id, vec![time], message);
-
-			let transact_instruction = Transact::<()> {
-				origin_type: OriginKind::SovereignAccount,
-				require_weight_at_most: 1_000_000_000,
-				call: call.encode().into(),
-			};
-			let buy_execution_weight_instruction = BuyExecution::<()> {
-				fees: MultiAsset {
-					id: Concrete(MultiLocation::here()),
-					fun: Fungibility::Fungible(9_600_000_000_000),
-				},
-				weight_limit: Limited(10_000_000),
-			};
-			// let sovereign_account: <T as frame_system::Config>::AccountId = 1;
-			let id = who
-				.using_encoded(|mut d| <[u8; 32]>::decode(&mut d))
-				.map_err(|_| Error::<T>::XcmExecutionFailed)?;
-			let refund_multilocation = MultiLocation {
-				parents: 0,
-				interior: X1(AccountId32 {
-					network: Any,
-					id,
-				}),
-			};
-			let refund_surplus_instruction = RefundSurplus::<()>;
-			let deposit_asset_instruction = DepositAsset::<()> {
-				assets: MultiAssetFilter::Wild(All),
-				max_assets: 1,
-				beneficiary: refund_multilocation.clone(),
-			};
-			let xcm_instruction_weight_set = Xcm(vec![
-				buy_execution_weight_instruction,
-				transact_instruction.clone(),
-				refund_surplus_instruction.clone(),
-				deposit_asset_instruction.clone(),
-			]);
-			let weight = T::Weigher::weight(&mut xcm_instruction_weight_set.clone().into()).unwrap();
-			info!("############# Custom Weight: {:?}", weight);
-
-			let buy_execution_instruction = BuyExecution::<()> {
-				fees: MultiAsset {
-					id: Concrete(MultiLocation {
-						parents: 1,
-						interior: X1(Parachain(2001)),
-					}),
-					fun: Fungibility::Fungible(9_600_000_000_000),
-				},
-				weight_limit: Limited(weight),
-			};
-
-			let recipient_xcm_instruction_set = Xcm(vec![
-				buy_execution_instruction,
-				transact_instruction,
-				refund_surplus_instruction,
-				deposit_asset_instruction,
-			]);
-
-			let multiassets: MultiAssets = vec![MultiAsset {
-				id: Concrete(MultiLocation::here()),
-				fun: Fungibility::Fungible(9_700_000_000_000),
-			}].into();
-			let withdraw_asset_instruction = WithdrawAsset::<()>(multiassets);
-			let internal_instruction_set = Xcm(vec![
-				withdraw_asset_instruction,
-				DepositReserveAsset {
-					assets: MultiAssetFilter::Definite(vec![MultiAsset {
-						id: Concrete(MultiLocation::here()),
-						fun: Fungibility::Fungible(9_700_000_000_000),
-					}].into()),
-					max_assets: 1,
-					dest: MultiLocation {
-						parents: 1,
-						interior: X1(Parachain(para.into())),
-					},
-					xcm: recipient_xcm_instruction_set,
-				}
-			]);
-
-			let xcm_origin = T::AccountIdToMultiLocation::convert(who);
-
-			T::XcmExecutor::execute_xcm_in_credit(
-				xcm_origin,
-				internal_instruction_set.into(),
-				2_000_000_000,
-				2_000_000_000
-			).ensure_complete()
-			.map_err(|error| {
-				log::error!("Failed execute transfer message with {:?}", error);
-				Error::<T>::XcmExecutionFailed
-			})?;
-			Ok(())
-		}
-
-		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn send_schedule_xcmp(origin: OriginFor<T>, para: ParaId, provided_id: Vec<u8>, time: u64) -> DispatchResult {
+		pub fn send_schedule_xcmp(
+			origin: OriginFor<T>,
+			para: ParaId,
+			provided_id: Vec<u8>,
+			time: u64,
+		) -> DispatchResult {
 			ensure_root(origin)?;
 
 			let call_name = b"automation_time_schedule_xcmp".to_vec();
