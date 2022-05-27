@@ -30,7 +30,12 @@ pub trait XcmInstructionGenerator<T: frame_system::Config> {
 		message: Vec<u8>,
 	) -> xcm::v2::Instruction<()>;
 
-	fn create_schedule_xcmp_instruction(para_id: ParaId, provided_id: Vec<u8>, time: u64, returnable_call: Vec<u8>) -> xcm::v2::Instruction<()>;
+	fn create_schedule_xcmp_instruction(
+		provided_id: Vec<u8>,
+		execution_times: Vec<u64>,
+		para_id: ParaId,
+		returnable_call: Vec<u8>
+	) -> xcm::v2::Instruction<()>;
 
 	fn create_cancel_task_instruction(task_id: T::Hash) -> xcm::v2::Instruction<()>;
 
@@ -63,7 +68,7 @@ where
 		);
 
 		Transact::<()> {
-			origin_type: OriginKind::SovereignAccount,
+			origin_type: OriginKind::Native,
 			require_weight_at_most: 6_000_000_000,
 			call: call.encode().into(),
 		}
@@ -78,18 +83,25 @@ where
 		let call = xcm_config::OakChainCallBuilder::automation_time_schedule_notify::<T>(provided_id, execution_times, message);
 
 		Transact::<()> {
-			origin_type: OriginKind::SovereignAccount,
+			origin_type: OriginKind::Native,
 			require_weight_at_most: 6_000_000_000,
 			call: call.encode().into(),
 		}
 	}
 
-	fn create_schedule_xcmp_instruction(para_id: ParaId, provided_id: Vec<u8>, time: u64, returnable_call: Vec<u8>) -> xcm::v2::Instruction<()> {
+	/**
+	 * provided_id: Vec<u8>,
+			execution_times: Vec<UnixTime>,
+			para_id: ParaId,
+			call: Vec<u8>,
+			weight_at_most: Weight,
+	 */
+	fn create_schedule_xcmp_instruction(provided_id: Vec<u8>, execution_times: Vec<u64>, para_id: ParaId, returnable_call: Vec<u8>) -> xcm::v2::Instruction<()> {
 		// let call_name = b"automation_time_schedule_xcmp".to_vec();
-		let call = xcm_config::OakChainCallBuilder::automation_time_schedule_xcmp::<T>(para_id, provided_id, time, returnable_call);
+		let call = xcm_config::OakChainCallBuilder::automation_time_schedule_xcmp::<T>(provided_id, execution_times, para_id, returnable_call, 6_000_000_000);
 
 		Transact::<()> {
-			origin_type: OriginKind::SovereignAccount,
+			origin_type: OriginKind::Native,
 			require_weight_at_most: 6_000_000_000,
 			call: call.encode().into(),
 		}
@@ -100,7 +112,7 @@ where
 		let call = xcm_config::OakChainCallBuilder::automation_time_cancel_task::<T>(task_id);
 
 		Transact::<()> {
-			origin_type: OriginKind::SovereignAccount,
+			origin_type: OriginKind::Native,
 			require_weight_at_most: 6_000_000_000,
 			call: call.encode().into(),
 		}

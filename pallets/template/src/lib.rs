@@ -159,7 +159,7 @@ use super::*;
 			para: ParaId,
 			para_response_location: ParaId,
 			provided_id: Vec<u8>,
-			time: u64,
+			execution_times: Vec<u64>,
 			source: T::AccountId,
 			dest: T::AccountId,
 			value: BalanceOf<T>,
@@ -170,7 +170,7 @@ use super::*;
 				.encode()
 				.into();
 			let transact_instruction =
-				T::OakXcmInstructionGenerator::create_schedule_xcmp_instruction(para_response_location, provided_id, time, inner_call);
+				T::OakXcmInstructionGenerator::create_schedule_xcmp_instruction(provided_id, execution_times, para_response_location, inner_call);
 			let asset = MultiAsset {
 				id: Concrete(MultiLocation::here()),
 				fun: Fungibility::Fungible(7_000_000_000),
@@ -296,14 +296,20 @@ use super::*;
 			origin: OriginFor<T>,
 			para: ParaId,
 			provided_id: Vec<u8>,
-			time: u64,
+			execution_times: Vec<u64>,
 		) -> DispatchResult {
 			ensure_root(origin)?;
 
 			let call_name = b"automation_time_schedule_xcmp".to_vec();
 
 			let inner_call = xcm_test::TestChainCallBuilder::remark_with_event::<T, BalanceOf<T>>(b"heya".to_vec());
-			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_xcmp::<T, BalanceOf<T>>(2001.into(), provided_id, time, inner_call.encode());
+			let call = xcm_test::OakChainCallBuilder::automation_time_schedule_xcmp::<T>(
+				provided_id,
+				execution_times,
+				2001.into(),
+				inner_call.encode(),
+				2_000_000_000
+			);
 
 			let transact_instruction = Transact::<()> {
 				origin_type: OriginKind::SovereignAccount,

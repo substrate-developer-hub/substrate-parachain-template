@@ -17,7 +17,7 @@ pub enum AutomationTimeCall {
     #[codec(index = 0)]
     ScheduleNotifyTask(Vec<u8>, Vec<u64>, Vec<u8>),
     #[codec(index = 2)]
-    ScheduleXcmpTask(ParaId, Vec<u8>, u64, Vec<u8>),
+    ScheduleXcmpTask(Vec<u8>, Vec<u64>, ParaId, Vec<u8>, u64),
 }
 
 #[derive(Encode, Decode, RuntimeDebug)]
@@ -57,13 +57,20 @@ impl OakChainCallBuilder {
         NeuChainCall::AutomationTime(AutomationTimeCall::ScheduleNotifyTask(provided_id, times, message))
     }
 
-    pub fn automation_time_schedule_xcmp<T: frame_system::Config, BalanceOf>(
-        para_id: ParaId,
+    pub fn automation_time_schedule_xcmp<T: frame_system::Config>(
         provided_id: Vec<u8>,
-        time: u64,
-        call: Vec<u8>
+        execution_times: Vec<u64>,
+        para_id: ParaId,
+        returnable_call: Vec<u8>,
+        weight_at_most: u64,
     ) -> NeuChainCall {
-        NeuChainCall::AutomationTime(AutomationTimeCall::ScheduleXcmpTask(para_id, provided_id, time, call))
+        NeuChainCall::AutomationTime(AutomationTimeCall::ScheduleXcmpTask(
+            provided_id,
+            execution_times,
+            para_id,
+            returnable_call,
+            weight_at_most,
+        ))
     }
 }
 
