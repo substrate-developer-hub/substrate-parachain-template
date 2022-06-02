@@ -17,7 +17,7 @@ scale-info = { version = "2.0.0", default-features = false, features = ["derive"
 log = { version = "0.4.16", default-features = false }
 
 # Local
-oak_xcm = { path = "../../libs/oak_xcm", default-features = false }
+oak_xcm = { git = "https://github.com/OAK-Foundation/OAK-XCM-crate", default-features = false,  branch = "jzhou/addCrate" }
 
 # Cumulus
 cumulus-pallet-xcm = { git = "https://github.com/paritytech/cumulus", default-features = false,  branch = "polkadot-v0.9.20" }

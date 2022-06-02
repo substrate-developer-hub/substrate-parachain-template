@@ -5050,6 +5050,7 @@ dependencies = [
 [[package]]
 name = "oak_xcm"
 version = "0.1.0"
+source = "git+https://github.com/OAK-Foundation/OAK-XCM-crate?branch=jzhou/addCrate#986121ffd2221331fdf894f6967cc548db498c0c"
 dependencies = [
  "cumulus-primitives-core",
  "frame-benchmarking",
@@ -5058,9 +5059,6 @@ dependencies = [
  "log",
  "parity-scale-codec",
  "scale-info",
- "serde",
- "sp-core",
- "sp-io",
  "sp-runtime",
  "sp-std",
  "xcm",
