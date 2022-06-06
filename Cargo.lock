@@ -5048,9 +5048,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "oak_xcm"
+name = "oak-xcm"
 version = "0.1.0"
-source = "git+https://github.com/OAK-Foundation/OAK-XCM-crate?branch=jzhou/addCrate#986121ffd2221331fdf894f6967cc548db498c0c"
+source = "git+https://github.com/OAK-Foundation/oak-xcm?branch=jzhou/adjustName#ec1b579b173eb8768442b55aa5b06801bf59289f"
 dependencies = [
  "cumulus-primitives-core",
  "frame-benchmarking",
@@ -5932,7 +5932,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "log",
- "oak_xcm",
+ "oak-xcm",
  "parity-scale-codec",
  "scale-info",
  "serde",
@@ -6209,7 +6209,7 @@ dependencies = [
  "frame-try-runtime",
  "hex-literal",
  "log",
- "oak_xcm",
+ "oak-xcm",
  "pallet-aura",
  "pallet-authorship",
  "pallet-balances",
