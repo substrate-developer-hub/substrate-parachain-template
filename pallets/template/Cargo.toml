@@ -14,11 +14,25 @@ targets = ["x86_64-unknown-linux-gnu"]
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.0.0", features = ["derive"], default-features = false }
 scale-info = { version = "2.0.0", default-features = false, features = ["derive"] }
+log = { version = "0.4.16", default-features = false }
+
+# Local
+oak-xcm = { git = "https://github.com/OAK-Foundation/oak-xcm", default-features = false,  branch = "main" }
+
+# Cumulus
+cumulus-pallet-xcm = { git = "https://github.com/paritytech/cumulus", default-features = false,  branch = "polkadot-v0.9.23" }
+cumulus-primitives-core = { git = "https://github.com/paritytech/cumulus", default-features = false,  branch = "polkadot-v0.9.23" }
+
+#Polkadot
+xcm = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.23" }
+xcm-executor = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.23" }
 
 # Substrate
+sp-std = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.23" }
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", default-features = false, optional = true, branch = "polkadot-v0.9.23" }
 frame-support = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.23" }
 frame-system = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.23" }
+sp-runtime = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.23" }
 
 [dev-dependencies]
 serde = { version = "1.0.132" }
@@ -33,9 +47,20 @@ default = ["std"]
 runtime-benchmarks = ["frame-benchmarking/runtime-benchmarks"]
 std = [
 	"codec/std",
-	"scale-info/std",
+	"cumulus-pallet-xcm/std",
+	"cumulus-primitives-core/std",
 	"frame-benchmarking/std",
 	"frame-support/std",
 	"frame-system/std",
+	"log/std",
+	"oak-xcm/std",
+	"scale-info/std",
+	"serde/std",
+	"sp-core/std",
+	"sp-io/std",
+	"sp-runtime/std",
+	"sp-std/std",
+	"xcm/std",
+	"xcm-executor/std"
 ]
 try-runtime = [ "frame-support/try-runtime" ]

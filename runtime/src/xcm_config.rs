@@ -26,6 +26,7 @@ parameter_types! {
 	pub const RelayNetwork: NetworkId = NetworkId::Any;
 	pub RelayChainOrigin: Origin = cumulus_pallet_xcm::Origin::Relay.into();
 	pub Ancestry: MultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
+	pub const ParaLocation: MultiLocation = MultiLocation::here();
 }
 
 /// Type for specifying how a `MultiLocation` can be converted into an `AccountId`. This is used
@@ -45,7 +46,7 @@ pub type LocalAssetTransactor = CurrencyAdapter<
 	// Use this currency:
 	Balances,
 	// Use this currency when it is a fungible asset matching the given location or name:
-	IsConcrete<RelayLocation>,
+	IsConcrete<ParaLocation>,
 	// Do a simple punn to convert an AccountId32 MultiLocation into a native chain account ID:
 	LocationToAccountId,
 	// Our chain's account ID type (we can't get away without mentioning it explicitly):
@@ -156,7 +157,8 @@ pub type Barrier = DenyThenTry<
 	(
 		TakeWeightCredit,
 		AllowTopLevelPaidExecutionFrom<Everything>,
-		AllowUnpaidExecutionFrom<ParentOrParentsExecutivePlurality>,
+		AllowUnpaidExecutionFrom<Everything>,
+		// AllowUnpaidExecutionFrom<ParentOrParentsExecutivePlurality>,
 		// ^^^ Parent and its exec plurality get free execution
 	),
 >;

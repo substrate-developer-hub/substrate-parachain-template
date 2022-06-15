@@ -16,3 +16,7 @@
 .DS_Store
 .idea
 .vscode
+
+# Parachain registration files
+genesis-state
+genesis-wasm

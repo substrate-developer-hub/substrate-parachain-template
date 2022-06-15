@@ -14,10 +14,11 @@ use sp_api::impl_runtime_apis;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
-	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
+	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify, Convert},
 	transaction_validity::{TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult, MultiSignature,
 };
+use oak_xcm;
 
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -39,7 +40,7 @@ use frame_system::{
 };
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 pub use sp_runtime::{MultiAddress, Perbill, Permill};
-use xcm_config::{XcmConfig, XcmOriginToTransactDispatchOrigin};
+use xcm_config::{XcmConfig, XcmOriginToTransactDispatchOrigin, XcmRouter};
 
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
@@ -50,8 +51,9 @@ use polkadot_runtime_common::{BlockHashCount, SlowAdjustingFeeUpdate};
 use weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight};
 
 // XCM Imports
-use xcm::latest::prelude::BodyId;
+use xcm::latest::prelude::*;
 use xcm_executor::XcmExecutor;
+use xcm_builder::FixedWeightBounds;
 
 /// Import the template pallet.
 pub use pallet_template;
@@ -451,9 +453,34 @@ impl pallet_collator_selection::Config for Runtime {
 	type WeightInfo = ();
 }
 
+pub struct AccountIdToU8Vec;
+impl Convert<AccountId, [u8; 32]> for AccountIdToU8Vec {
+		fn convert(_account: AccountId) -> [u8; 32] {
+				[0u8; 32]
+		}
+}
+
+parameter_types! {
+	pub const MaxInstructions: u32 = 100;
+	pub const UnitWeightCost: Weight = 1_000_000_000;
+}
+
 /// Configure the pallet template in pallets/template.
 impl pallet_template::Config for Runtime {
 	type Event = Event;
+	type Origin = Origin;
+	type Call = Call;
+	type XcmSender = XcmRouter;
+	type XcmExecutor = XcmExecutor<XcmConfig>;
+	type OakXcmInstructionGenerator =
+		oak_xcm::OakXcmInstructionGenerator<AccountIdToU8Vec, FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>>;
+	type Currency = Balances;
+	type SelfParaId = parachain_info::Pallet<Runtime>;
+}
+
+impl pallet_sudo::Config for Runtime {
+	type Event = Event;
+	type Call = Call;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -470,6 +497,7 @@ construct_runtime!(
 		} = 1,
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent} = 2,
 		ParachainInfo: parachain_info::{Pallet, Storage, Config} = 3,
+		Sudo: pallet_sudo::{Pallet, Call, Storage, Event<T>, Config<T>} = 4,
 
 		// Monetary stuff.
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,

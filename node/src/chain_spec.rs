@@ -101,7 +101,8 @@ pub fn development_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
-				1000.into(),
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
+				2001.into(),
 			)
 		},
 		Vec::new(),
@@ -111,7 +112,7 @@ pub fn development_config() -> ChainSpec {
 		None,
 		Extensions {
 			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-			para_id: 1000,
+			para_id: 2001,
 		},
 	)
 }
@@ -156,7 +157,8 @@ pub fn local_testnet_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
-				1000.into(),
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
+				2001.into(),
 			)
 		},
 		// Bootnodes
@@ -172,7 +174,7 @@ pub fn local_testnet_config() -> ChainSpec {
 		// Extensions
 		Extensions {
 			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-			para_id: 1000,
+			para_id: 2001,
 		},
 	)
 }
@@ -180,6 +182,7 @@ pub fn local_testnet_config() -> ChainSpec {
 fn testnet_genesis(
 	invulnerables: Vec<(AccountId, AuraId)>,
 	endowed_accounts: Vec<AccountId>,
+	root_key: AccountId,
 	id: ParaId,
 ) -> parachain_template_runtime::GenesisConfig {
 	parachain_template_runtime::GenesisConfig {
@@ -209,6 +212,7 @@ fn testnet_genesis(
 				})
 				.collect(),
 		},
+		sudo: parachain_template_runtime::SudoConfig { key: Some(root_key) },
 		// no need to pass anything to aura, in fact it will panic if we do. Session will take care
 		// of this.
 		aura: Default::default(),

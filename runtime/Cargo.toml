@@ -24,6 +24,7 @@ smallvec = "1.6.1"
 
 # Local
 pallet-template = { path = "../pallets/template", default-features = false }
+oak-xcm = { git = "https://github.com/OAK-Foundation/oak-xcm", default-features = false,  branch = "main" }
 
 # Substrate
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", default-features = false, optional = true, branch = "polkadot-v0.9.23" }
@@ -125,6 +126,7 @@ std = [
 	"xcm-builder/std",
 	"xcm-executor/std",
 	"xcm/std",
+	"oak-xcm/std",
 ]
 
 runtime-benchmarks = [
