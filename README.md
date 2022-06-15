@@ -59,7 +59,7 @@ cargo build --release
 2. Click `+ ParaId`
 3. Reserve `paraid` with the following paramaters
     - `reserve from`: `Alice`
-    - `parachain id`: 2001
+    - `parachain id`: 1999
     - `reserved deposit`: <whatever the default is>
 
 
