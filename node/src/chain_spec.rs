@@ -12,6 +12,7 @@ pub type ChainSpec =
 
 /// The default XCM version to set in genesis config.
 const SAFE_XCM_VERSION: u32 = xcm::prelude::XCM_VERSION;
+const REGISTERED_PARA_ID: u32 = 1999;
 
 /// Helper function to generate a crypto pair from seed
 pub fn get_public_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
@@ -102,7 +103,7 @@ pub fn development_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
-				2001.into(),
+				REGISTERED_PARA_ID.into(),
 			)
 		},
 		Vec::new(),
@@ -112,7 +113,7 @@ pub fn development_config() -> ChainSpec {
 		None,
 		Extensions {
 			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-			para_id: 2001,
+			para_id: REGISTERED_PARA_ID,
 		},
 	)
 }
@@ -158,7 +159,7 @@ pub fn local_testnet_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
-				2001.into(),
+				REGISTERED_PARA_ID.into(),
 			)
 		},
 		// Bootnodes
@@ -174,7 +175,7 @@ pub fn local_testnet_config() -> ChainSpec {
 		// Extensions
 		Extensions {
 			relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-			para_id: 2001,
+			para_id: REGISTERED_PARA_ID,
 		},
 	)
 }
