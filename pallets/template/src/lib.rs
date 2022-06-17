@@ -50,7 +50,7 @@ use super::*;
 		type OakXcmInstructionGenerator: XcmInstructionGenerator<Self>;
 		type Currency: Currency<Self::AccountId>;
 		type SelfParaId: Get<ParaId>;
-		type TuringParaId: Get<ParaId>;
+		type OakAutomationParaId: Get<ParaId>;
 	}
 
 	#[pallet::pallet]
@@ -117,7 +117,7 @@ use super::*;
 			value: BalanceOf<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
-			let tur_para_id: ParaId = ParaId::from(T::TuringParaId::get());
+			let tur_para_id: ParaId = ParaId::from(T::OakAutomationParaId::get());
 			let self_para_id: ParaId = T::SelfParaId::get();
 			let call_name = b"automation_time_schedule_xcmp_with_crate".to_vec();
 			let inner_call = <T as Config>::Call::from(Call::<T>::delayed_transfer { source: who.clone(), dest, value })

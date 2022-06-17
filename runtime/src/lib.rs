@@ -462,7 +462,7 @@ impl Convert<AccountId, [u8; 32]> for AccountIdToU8Vec {
 parameter_types! {
 	pub const MaxInstructions: u32 = 100;
 	pub const UnitWeightCost: Weight = 1_000_000_000;
-	pub const TuringParaId: u32 = oak_xcm::TURING_PARA_ID;
+	pub const OakAutomationParaId: u32 = oak_xcm::TURING_PARA_ID;
 }
 
 /// Configure the pallet template in pallets/template.
@@ -476,7 +476,7 @@ impl pallet_template::Config for Runtime {
 		oak_xcm::OakXcmInstructionGenerator<AccountIdToU8Vec, FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>>;
 	type Currency = Balances;
 	type SelfParaId = parachain_info::Pallet<Runtime>;
-	type TuringParaId = TuringParaId;
+	type OakAutomationParaId = OakAutomationParaId;
 }
 
 impl pallet_sudo::Config for Runtime {
