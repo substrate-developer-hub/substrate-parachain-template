@@ -7,11 +7,13 @@
 use cumulus_pallet_xcm::{ensure_sibling_para, Origin as CumulusOrigin};
 use cumulus_primitives_core::ParaId;
 use frame_system::Config as SystemConfig;
+use polkadot_parachain::primitives::Sibling;
+use sp_runtime::traits::AccountIdConversion;
 use sp_std::prelude::*;
 use xcm::latest::prelude::*;
 
 pub use pallet::*;
-use oak_xcm::{XcmInstructionGenerator, TURING_PARA_ID};
+use oak_xcm::XcmInstructionGenerator;
 
 #[cfg(test)]
 mod mock;
@@ -48,6 +50,7 @@ use super::*;
 		type OakXcmInstructionGenerator: XcmInstructionGenerator<Self>;
 		type Currency: Currency<Self::AccountId>;
 		type SelfParaId: Get<ParaId>;
+		type TuringParaId: Get<ParaId>;
 	}
 
 	#[pallet::pallet]
@@ -70,6 +73,8 @@ use super::*;
 		// TODO: expand into XcmExecutionFailed(XcmError) after https://github.com/paritytech/substrate/pull/10242 done
 		/// XCM execution failed.
 		XcmExecutionFailed,
+		// Invalid Refund Address
+		InvalidRefundAddress,
 	}
 
 	#[pallet::call]
@@ -112,7 +117,7 @@ use super::*;
 			value: BalanceOf<T>,
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
-			let tur_para_id: ParaId = ParaId::from(TURING_PARA_ID);
+			let tur_para_id: ParaId = ParaId::from(T::TuringParaId::get());
 			let self_para_id: ParaId = T::SelfParaId::get();
 			let call_name = b"automation_time_schedule_xcmp_with_crate".to_vec();
 			let inner_call = <T as Config>::Call::from(Call::<T>::delayed_transfer { source: who.clone(), dest, value })
@@ -125,7 +130,15 @@ use super::*;
 				fun: Fungibility::Fungible(7_000_000_000),
 			};
 
-			let xcm_instruction_set = T::OakXcmInstructionGenerator::create_xcm_instruction_set(asset, transact_instruction, who);
+			let refund_account = match AccountIdConversion::<T::AccountId>::try_into_account(&Sibling::from(self_para_id)) {
+				Some(para_id) => {
+					para_id
+				},
+				None => {
+					Err(Error::<T>::InvalidRefundAddress)?
+				}
+			};
+			let xcm_instruction_set = T::OakXcmInstructionGenerator::create_xcm_instruction_set(asset, transact_instruction, refund_account);
 
 			match T::XcmSender::send_xcm(
 				(1, Junction::Parachain(tur_para_id.into())),

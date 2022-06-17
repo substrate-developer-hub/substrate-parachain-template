@@ -24,6 +24,8 @@ cumulus-pallet-xcm = { git = "https://github.com/paritytech/cumulus", default-fe
 cumulus-primitives-core = { git = "https://github.com/paritytech/cumulus", default-features = false,  branch = "polkadot-v0.9.23" }
 
 #Polkadot
+polkadot-parachain = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.23" }
+polkadot-primitives = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.23" }
 xcm = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.23" }
 xcm-executor = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.23" }
 
@@ -54,6 +56,8 @@ std = [
 	"frame-system/std",
 	"log/std",
 	"oak-xcm/std",
+	"polkadot-parachain/std",
+	"polkadot-primitives/std",
 	"scale-info/std",
 	"serde/std",
 	"sp-core/std",

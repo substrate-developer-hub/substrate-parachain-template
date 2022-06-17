@@ -5727,6 +5727,8 @@ dependencies = [
  "log",
  "oak-xcm",
  "parity-scale-codec",
+ "polkadot-parachain",
+ "polkadot-primitives",
  "scale-info",
  "serde",
  "sp-core",

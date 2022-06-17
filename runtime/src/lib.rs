@@ -18,7 +18,6 @@ use sp_runtime::{
 	transaction_validity::{TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult, MultiSignature,
 };
-use oak_xcm;
 
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -455,14 +454,15 @@ impl pallet_collator_selection::Config for Runtime {
 
 pub struct AccountIdToU8Vec;
 impl Convert<AccountId, [u8; 32]> for AccountIdToU8Vec {
-		fn convert(_account: AccountId) -> [u8; 32] {
-				[0u8; 32]
+		fn convert(account: AccountId) -> [u8; 32] {
+				account.into()
 		}
 }
 
 parameter_types! {
 	pub const MaxInstructions: u32 = 100;
 	pub const UnitWeightCost: Weight = 1_000_000_000;
+	pub const TuringParaId: u32 = oak_xcm::TURING_PARA_ID;
 }
 
 /// Configure the pallet template in pallets/template.
@@ -476,6 +476,7 @@ impl pallet_template::Config for Runtime {
 		oak_xcm::OakXcmInstructionGenerator<AccountIdToU8Vec, FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>>;
 	type Currency = Balances;
 	type SelfParaId = parachain_info::Pallet<Runtime>;
+	type TuringParaId = TuringParaId;
 }
 
 impl pallet_sudo::Config for Runtime {
