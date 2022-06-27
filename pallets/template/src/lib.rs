@@ -8,7 +8,7 @@ use cumulus_pallet_xcm::{ensure_sibling_para, Origin as CumulusOrigin};
 use cumulus_primitives_core::ParaId;
 use frame_system::Config as SystemConfig;
 use polkadot_parachain::primitives::Sibling;
-use sp_runtime::traits::AccountIdConversion;
+use sp_runtime::traits::{AccountIdConversion, Convert};
 use sp_std::prelude::*;
 use xcm::latest::prelude::*;
 
@@ -51,6 +51,7 @@ use super::*;
 		type Currency: Currency<Self::AccountId>;
 		type SelfParaId: Get<ParaId>;
 		type OakAutomationParaId: Get<ParaId>;
+		type AccountIdToMultiLocation: Convert<Self::AccountId, MultiLocation>;
 	}
 
 	#[pallet::pallet]
@@ -151,6 +152,115 @@ use super::*;
 					Self::deposit_event(Event::ErrorSendingCall(e, tur_para_id, call_name));
 				}
 			};
+			Ok(())
+		}
+
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+		pub fn send_schedule_notify_in_unit(
+			origin: OriginFor<T>,
+			provided_id: Vec<u8>,
+			execution_times: Vec<u64>,
+			dest: T::AccountId,
+			value: BalanceOf<T>,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			let tur_para_id: ParaId = ParaId::from(T::OakAutomationParaId::get());
+			let self_para_id: ParaId = T::SelfParaId::get();
+			let call_name = b"automation_time_schedule_xcmp_in_unit".to_vec();
+
+			let inner_call = <T as Config>::Call::from(Call::<T>::delayed_transfer { source: who.clone(), dest, value })
+				.encode()
+				.into();
+
+			let transact_instruction =
+				T::OakXcmInstructionGenerator::create_schedule_xcmp_instruction(provided_id, execution_times, self_para_id, inner_call);
+
+			let refund_surplus_instruction = RefundSurplus::<()>;
+
+			let buy_execution_instruction = BuyExecution::<()> {
+				fees: MultiAsset {
+					id: Concrete(MultiLocation {
+						parents: 1,
+						interior: X1(Parachain(self_para_id.into())),
+					}),
+					fun: Fungibility::Fungible(10_000_000_000),
+				},
+				weight_limit: Unlimited,
+			};
+			let multiassets: MultiAssets = vec![MultiAsset {
+				id: Concrete(MultiLocation {
+					parents: 1,
+					interior: X1(Parachain(self_para_id.into())),
+				}),
+				fun: Fungibility::Fungible(10_000_000_000),
+			}].into();
+			let deposit_asset_instruction = DepositAsset::<()> {
+				assets: MultiAssetFilter::Definite(multiassets.clone()),
+				max_assets: 1,
+				beneficiary: MultiLocation {
+					parents: 1,
+					interior: X1(Parachain(tur_para_id.into())),
+				},
+			};
+			// let interior: Junctions = T::AccountIdToMultiLocation::convert(who.clone())
+      //           .clone()
+      //           .try_into()
+      //           .map_err(|_| Error::<T>::XcmExecutionFailed)?;
+			// let descend_origin_instruction = DescendOrigin::<()>(interior);
+			let reserve_asset_instruction = ReserveAssetDeposited::<()>(multiassets);
+			let recipient_xcm_instruction_set = Xcm(vec![
+				reserve_asset_instruction,
+				buy_execution_instruction,
+				// descend_origin_instruction,
+				transact_instruction,
+				refund_surplus_instruction,
+				deposit_asset_instruction,
+			]);
+
+			let withdraw_asset_instruction = WithdrawAsset::<()>(vec![MultiAsset {
+				id: Concrete(MultiLocation::here()),
+				fun: Fungibility::Fungible(10_000_000_000),
+			}].into());
+			let internal_instruction_set = Xcm(vec![
+				withdraw_asset_instruction,
+				DepositAsset {
+					assets: MultiAssetFilter::Definite(vec![MultiAsset {
+						id: Concrete(MultiLocation::here()),
+						fun: Fungibility::Fungible(10_000_000_000),
+					}].into()),
+					max_assets: 1,
+					beneficiary: MultiLocation {
+						parents: 1,
+						interior: X1(Parachain(tur_para_id.into())),
+					},
+				}
+			]);
+
+			let xcm_origin = T::AccountIdToMultiLocation::convert(who);
+
+			T::XcmExecutor::execute_xcm_in_credit(
+				xcm_origin.clone(),
+				internal_instruction_set.into(),
+				11_000_000_000,
+				11_000_000_000
+			).ensure_complete()
+			.map_err(|error| {
+				log::error!("Failed execute transfer message with {:?}", error);
+				Error::<T>::XcmExecutionFailed
+			})?;
+
+			match T::XcmSender::send_xcm(
+				(1, Junction::Parachain(tur_para_id.into())),
+				recipient_xcm_instruction_set,
+			) {
+				Ok(()) => {
+					Self::deposit_event(Event::CallSent(call_name));
+				},
+				Err(e) => {
+					Self::deposit_event(Event::ErrorSendingCall(e, tur_para_id, call_name));
+				}
+			};
+
 			Ok(())
 		}
 	}

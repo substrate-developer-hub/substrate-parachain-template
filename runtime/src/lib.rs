@@ -459,6 +459,13 @@ impl Convert<AccountId, [u8; 32]> for AccountIdToU8Vec {
 		}
 }
 
+pub struct AccountIdToMultiLocation;
+impl Convert<AccountId, MultiLocation> for AccountIdToMultiLocation {
+		fn convert(account: AccountId) -> MultiLocation {
+				X1(AccountId32 { network: NetworkId::Any, id: account.into() }).into()
+		}
+}
+
 parameter_types! {
 	pub const MaxInstructions: u32 = 100;
 	pub const UnitWeightCost: Weight = 1_000_000_000;
@@ -477,6 +484,7 @@ impl pallet_template::Config for Runtime {
 	type Currency = Balances;
 	type SelfParaId = parachain_info::Pallet<Runtime>;
 	type OakAutomationParaId = OakAutomationParaId;
+	type AccountIdToMultiLocation = AccountIdToMultiLocation;
 }
 
 impl pallet_sudo::Config for Runtime {
