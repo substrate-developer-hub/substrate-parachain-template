@@ -1,5 +1,5 @@
 use cumulus_primitives_core::ParaId;
-use parachain_template_runtime::{EXISTENTIAL_DEPOSIT, TOKEN_DECIMALS};
+use parachain_template_runtime::{CouncilConfig, EXISTENTIAL_DEPOSIT, TOKEN_DECIMALS};
 use primitives::{AccountId, AuraId, Signature};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
@@ -108,6 +108,11 @@ pub fn development_config() -> ChainSpec {
 				],
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
 				REGISTERED_PARA_ID.into(),
+				vec![
+					get_account_id_from_seed::<sr25519::Public>("Alice"),
+					get_account_id_from_seed::<sr25519::Public>("Bob"),
+					get_account_id_from_seed::<sr25519::Public>("Charlie"),
+				],
 			)
 		},
 		Vec::new(),
@@ -164,6 +169,11 @@ pub fn local_testnet_config() -> ChainSpec {
 				],
 				get_account_id_from_seed::<sr25519::Public>("Alice"),
 				REGISTERED_PARA_ID.into(),
+				vec![
+					get_account_id_from_seed::<sr25519::Public>("Alice"),
+					get_account_id_from_seed::<sr25519::Public>("Bob"),
+					get_account_id_from_seed::<sr25519::Public>("Charlie"),
+				],
 			)
 		},
 		// Bootnodes
@@ -189,6 +199,7 @@ fn testnet_genesis(
 	endowed_accounts: Vec<AccountId>,
 	root_key: AccountId,
 	id: ParaId,
+	general_councils: Vec<AccountId>,
 ) -> parachain_template_runtime::GenesisConfig {
 	parachain_template_runtime::GenesisConfig {
 		system: parachain_template_runtime::SystemConfig {
@@ -222,9 +233,11 @@ fn testnet_genesis(
 		// of this.
 		aura: Default::default(),
 		aura_ext: Default::default(),
+		council: CouncilConfig { members: general_councils, phantom: Default::default() },
 		parachain_system: Default::default(),
 		polkadot_xcm: parachain_template_runtime::PolkadotXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
 		},
+		treasury: Default::default(),
 	}
 }
