@@ -24,6 +24,7 @@ smallvec = "1.6.1"
 
 # Local
 pallet-template = { path = "../pallets/template", default-features = false }
+primitives = { path = "../primitives", default-features = false }
 oak-xcm = { git = "https://github.com/OAK-Foundation/oak-xcm", default-features = false,  branch = "main" }
 
 # Substrate
@@ -111,6 +112,7 @@ std = [
 	"parachain-info/std",
 	"polkadot-parachain/std",
 	"polkadot-runtime-common/std",
+	"primitives/std",
 	"sp-api/std",
 	"sp-block-builder/std",
 	"sp-consensus-aura/std",

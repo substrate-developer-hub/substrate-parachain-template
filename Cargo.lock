@@ -5943,6 +5943,7 @@ dependencies = [
  "polkadot-parachain",
  "polkadot-primitives",
  "polkadot-service",
+ "primitives",
  "sc-basic-authorship",
  "sc-chain-spec",
  "sc-cli",
@@ -6018,6 +6019,7 @@ dependencies = [
  "parity-scale-codec",
  "polkadot-parachain",
  "polkadot-runtime-common",
+ "primitives",
  "scale-info",
  "serde",
  "smallvec",
@@ -7509,6 +7511,15 @@ dependencies = [
  "impl-serde",
  "scale-info",
  "uint",
+]
+
+[[package]]
+name = "primitives"
+version = "0.1.0"
+dependencies = [
+ "sp-consensus-aura",
+ "sp-core",
+ "sp-runtime",
 ]
 
 [[package]]

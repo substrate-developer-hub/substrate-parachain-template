@@ -24,6 +24,7 @@ jsonrpsee = { version = "0.13.1", features = ["server"] }
 
 # Local
 parachain-template-runtime = { path = "../runtime" }
+primitives = {path = "../primitives"}
 
 # Substrate
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.23" }

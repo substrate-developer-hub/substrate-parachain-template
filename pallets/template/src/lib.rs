@@ -3,7 +3,6 @@
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
-
 use cumulus_pallet_xcm::{ensure_sibling_para, Origin as CumulusOrigin};
 use cumulus_primitives_core::ParaId;
 use frame_system::Config as SystemConfig;
@@ -12,8 +11,8 @@ use sp_runtime::traits::AccountIdConversion;
 use sp_std::prelude::*;
 use xcm::latest::prelude::*;
 
-pub use pallet::*;
 use oak_xcm::XcmInstructionGenerator;
+pub use pallet::*;
 
 #[cfg(test)]
 mod mock;
@@ -27,8 +26,11 @@ mod benchmarking;
 #[frame_support::pallet]
 pub mod pallet {
 
-use super::*;
-	use frame_support::{pallet_prelude::*, traits::{ExistenceRequirement, Currency}};
+	use super::*;
+	use frame_support::{
+		pallet_prelude::*,
+		traits::{Currency, ExistenceRequirement},
+	};
 	use frame_system::pallet_prelude::*;
 	use log::info;
 
@@ -80,7 +82,7 @@ use super::*;
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
 		/**
-		 * This function wraps the currency transfer private function that can move tokens from wallet to wallet. 
+		 * This function wraps the currency transfer private function that can move tokens from wallet to wallet.
 		 * The intention is for this function to be called by the `Transact` XCM instruction when Turing calls back to this chain.
 		 * While we are using transfer, this is just an example and any private function can be used to substitute.
 		 *
@@ -88,7 +90,12 @@ use super::*;
 		 * Using this parachain ID, the user can make sure that the para ID is whitelisted.
 		 */
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn delayed_transfer(origin: OriginFor<T>, source: T::AccountId, dest: T::AccountId, value: BalanceOf<T>) -> DispatchResult {
+		pub fn delayed_transfer(
+			origin: OriginFor<T>,
+			source: T::AccountId,
+			dest: T::AccountId,
+			value: BalanceOf<T>,
+		) -> DispatchResult {
 			let origin_para_id: ParaId = ensure_sibling_para(<T as Config>::Origin::from(origin))?;
 			info!("Send balance on a delayed transfer, source: {:?}, dest: {:?}, value: {:?}, origin_para_id: {:?}", source, dest, value, origin_para_id);
 			<T as Config>::Currency::transfer(
@@ -104,7 +111,7 @@ use super::*;
 		 * This function implements XCM call to OAK with the OAK XCM crate. It uses the `delayed_transfer` extrinsic above.
 		 * We can create an XCMP instruction with that call wrapped in the instructions to be sent back to this chain.
 		 * This implementation withdraws assets for the fee from the sovereign account of this chain on Turing.
-		 * Therefore, TUR tokens must be available for this sovereign account on the Turing chain. 
+		 * Therefore, TUR tokens must be available for this sovereign account on the Turing chain.
 		 *
 		 * NOTE: 7_000_000_000 as the fungible asset amount being withdrawn is just a temporary measure until fees are put into the crate.
 		 */
@@ -120,25 +127,36 @@ use super::*;
 			let tur_para_id: ParaId = ParaId::from(T::OakAutomationParaId::get());
 			let self_para_id: ParaId = T::SelfParaId::get();
 			let call_name = b"automation_time_schedule_xcmp_with_crate".to_vec();
-			let inner_call = <T as Config>::Call::from(Call::<T>::delayed_transfer { source: who.clone(), dest, value })
-				.encode()
-				.into();
+			let inner_call = <T as Config>::Call::from(Call::<T>::delayed_transfer {
+				source: who.clone(),
+				dest,
+				value,
+			})
+			.encode()
+			.into();
 			let transact_instruction =
-				T::OakXcmInstructionGenerator::create_schedule_xcmp_instruction(provided_id, execution_times, self_para_id, inner_call);
+				T::OakXcmInstructionGenerator::create_schedule_xcmp_instruction(
+					provided_id,
+					execution_times,
+					self_para_id,
+					inner_call,
+				);
 			let asset = MultiAsset {
 				id: Concrete(MultiLocation::here()),
 				fun: Fungibility::Fungible(7_000_000_000),
 			};
 
-			let refund_account = match AccountIdConversion::<T::AccountId>::try_into_account(&Sibling::from(self_para_id)) {
-				Some(para_id) => {
-					para_id
-				},
-				None => {
-					Err(Error::<T>::InvalidRefundAddress)?
-				}
+			let refund_account = match AccountIdConversion::<T::AccountId>::try_into_account(
+				&Sibling::from(self_para_id),
+			) {
+				Some(para_id) => para_id,
+				None => Err(Error::<T>::InvalidRefundAddress)?,
 			};
-			let xcm_instruction_set = T::OakXcmInstructionGenerator::create_xcm_instruction_set(asset, transact_instruction, refund_account);
+			let xcm_instruction_set = T::OakXcmInstructionGenerator::create_xcm_instruction_set(
+				asset,
+				transact_instruction,
+				refund_account,
+			);
 
 			match T::XcmSender::send_xcm(
 				(1, Junction::Parachain(tur_para_id.into())),
@@ -149,7 +167,7 @@ use super::*;
 				},
 				Err(e) => {
 					Self::deposit_event(Event::ErrorSendingCall(e, tur_para_id, call_name));
-				}
+				},
 			};
 			Ok(())
 		}
