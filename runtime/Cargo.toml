@@ -85,6 +85,14 @@ cumulus-primitives-utility = { git = "https://github.com/paritytech/cumulus", de
 pallet-collator-selection = { git = "https://github.com/paritytech/cumulus", default-features = false,  branch = "polkadot-v0.9.23" }
 parachain-info = { git = "https://github.com/paritytech/cumulus", default-features = false,  branch = "polkadot-v0.9.23" }
 
+# ORML Dependencies
+orml-currencies = { git = "https://github.com/open-web3-stack/open-runtime-module-library", default-features = false, rev = "e1caed6585f97110c2fd6f5fbcde9eea011457df" }
+orml-tokens = { git = "https://github.com/open-web3-stack/open-runtime-module-library", default-features = false, rev = "e1caed6585f97110c2fd6f5fbcde9eea011457df" }
+orml-traits = { git = "https://github.com/open-web3-stack/open-runtime-module-library", default-features = false, rev = "e1caed6585f97110c2fd6f5fbcde9eea011457df" }
+orml-xcm-support = { git = "https://github.com/open-web3-stack/open-runtime-module-library", default-features = false, rev = "e1caed6585f97110c2fd6f5fbcde9eea011457df" }
+orml-xtokens = { git = "https://github.com/open-web3-stack/open-runtime-module-library", default-features = false, rev = "e1caed6585f97110c2fd6f5fbcde9eea011457df" }
+orml-unknown-tokens = { git = "https://github.com/open-web3-stack/open-runtime-module-library", default-features = false, rev = "e1caed6585f97110c2fd6f5fbcde9eea011457df" }
+
 [features]
 default = [
 	"std",
@@ -140,6 +148,12 @@ std = [
 	"xcm-executor/std",
 	"xcm/std",
 	"oak-xcm/std",
+	"orml-currencies/std",
+	"orml-tokens/std",
+	"orml-traits/std",
+	"orml-xcm-support/std",
+	"orml-xtokens/std",
+	"orml-unknown-tokens/std",
 ]
 
 runtime-benchmarks = [
