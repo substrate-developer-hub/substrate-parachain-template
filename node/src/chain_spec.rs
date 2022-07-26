@@ -238,6 +238,7 @@ fn testnet_genesis(
 		polkadot_xcm: parachain_template_runtime::PolkadotXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
 		},
+		tokens: Default::default(),
 		treasury: Default::default(),
 	}
 }
