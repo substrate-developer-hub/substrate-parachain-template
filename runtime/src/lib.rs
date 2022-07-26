@@ -341,7 +341,7 @@ impl TokenInfo for CurrencyId {
 		match self {
 			CurrencyId::Native => 10,
 			CurrencyId::ROC => 12,
-			CurrencyId::TUR => 12,
+			CurrencyId::TUR => 10,
 		}
 	}
 }
