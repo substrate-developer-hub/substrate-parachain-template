@@ -555,6 +555,13 @@ impl pallet_sudo::Config for Runtime {
 	type Call = Call;
 }
 
+impl pallet_utility::Config for Runtime {
+	type Event = Event;
+	type Call = Call;
+	type PalletsOrigin = OriginCaller;
+	type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+}
+
 parameter_types! {
 	pub const ProposalBond: Permill = Permill::from_percent(5);
 	pub const ProposalBondMinimum: Balance = 1 * DOLLAR;
@@ -645,6 +652,7 @@ construct_runtime!(
 		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent} = 2,
 		ParachainInfo: parachain_info::{Pallet, Storage, Config} = 3,
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Event<T>, Config<T>} = 4,
+		Utility: pallet_utility::{Pallet, Call, Event} = 5,
 
 		// Monetary stuff.
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,

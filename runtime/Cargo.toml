@@ -64,6 +64,7 @@ pallet-timestamp = { git = "https://github.com/paritytech/substrate", default-fe
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.23" }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.23" }
 pallet-treasury = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.23" }
+pallet-utility = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v0.9.23" }
 
 # Polkadot
 pallet-xcm = { git = "https://github.com/paritytech/polkadot", default-features = false, branch = "release-v0.9.23" }
@@ -129,6 +130,7 @@ std = [
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
 	"pallet-treasury/std",
+	"pallet-utility/std",
 	"pallet-xcm/std",
 	"parachain-info/std",
 	"polkadot-parachain/std",
@@ -169,6 +171,7 @@ runtime-benchmarks = [
 	"pallet-proxy/runtime-benchmarks",
 	"pallet-template/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
+	"pallet-utility/runtime-benchmarks",
 	"pallet-xcm/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 	"xcm-builder/runtime-benchmarks",
