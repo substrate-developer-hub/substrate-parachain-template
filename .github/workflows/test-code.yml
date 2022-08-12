@@ -10,7 +10,7 @@ on:
 
 jobs:
   test-code:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Code
@@ -30,7 +30,7 @@ jobs:
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
-        toolchain: nightly-2021-12-01
+        toolchain: nightly
         components: rustfmt, clippy
         target: wasm32-unknown-unknown
         override: true
@@ -38,7 +38,7 @@ jobs:
 
     # Enable this for clippy linting.
     # - name: Check and Lint Code
-    #   run: cargo +nightly-2021-12-01 clippy -- -D warnings
+    #   run: cargo +nightly clippy -- -D warnings
 
     - name: Check Code
       run: cargo check
