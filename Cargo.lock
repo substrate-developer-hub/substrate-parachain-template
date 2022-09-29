@@ -2329,7 +2329,6 @@ dependencies = [
 name = "frame-benchmarking-cli"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.29#7c4ac358c29c9748c6e8ed4e05910504cd01a3b9"
-source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.28#b4db729801bd648941439d5b8324e6ea618a013c"
 dependencies = [
  "Inflector",
  "chrono",
