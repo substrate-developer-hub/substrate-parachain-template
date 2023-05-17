@@ -7,19 +7,21 @@ ENV RUST_BACKTRACE 1
 RUN apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 		ca-certificates && \
-  useradd -m -u 1000 -U -s /bin/sh -d /parachain-template parachain-template && \
 # apt cleanup
 	apt-get autoremove -y && \
 	apt-get clean && \
-	rm -rf /var/lib/apt/lists/* && \
-	mkdir -p /data /parachain-template/.local/share && \
-	chown -R parachain-template:parachain-template /data && \
-	ln -s /data /parachain-template/.local/share/parachain-template
+	find /var/lib/apt/lists/ -type f -not -name lock -delete; \
+# add user and link ~/.local/share/polkadot to /data
+	useradd -m -u 1000 -U -s /bin/sh -d /polkadot polkadot && \
+	mkdir -p /data /polkadot/.local/share && \
+	chown -R polkadot:polkadot /data && \
+	ln -s /data /polkadot/.local/share/parachain-template-node && \
+	mkdir -p /specs
 
-USER parachain-template
+USER polkadot
 
 # copy the compiled binary to the container
-COPY --chown=parachain-template:parachain-template --chmod=774 parachain-template-node /usr/bin/parachain-template-node
+COPY --chown=polkadot:polkadot --chmod=774 parachain-template-node /usr/bin/parachain-template-node
 
 # check if executable works in this container
 RUN /usr/bin/parachain-template-node --version
