@@ -19,14 +19,12 @@ RUN apt-get update && \
 USER parachain-template
 
 # copy the compiled binary to the container
-COPY --chown=parachain-template:parachain-template --chmod=774 parachain-template /usr/bin/parachain-template
+COPY --chown=parachain-template:parachain-template --chmod=774 parachain-template-node /usr/bin/parachain-template-node
 
 # check if executable works in this container
-RUN /usr/bin/parachain-template --version
+RUN /usr/bin/parachain-template-node --version
 
 # ws_port
-EXPOSE 9930 9333 9944 30333 30334
+EXPOSE 9333 9944 30333 30334
 
-VOLUME ["/parachain-template"]
-
-ENTRYPOINT ["/usr/bin/parachain-template"]
+CMD ["/usr/bin/parachain-template-node"]

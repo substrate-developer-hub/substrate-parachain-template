@@ -107,7 +107,7 @@ jobs:
       # Build and upload the binary to the new release
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
-          bin: parachain-template
+          bin: parachain-template-node
           target: ${{ matrix.target }}
           tar: all
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -116,8 +116,8 @@ jobs:
         if: (matrix.target == 'x86_64-unknown-linux-gnu')
         uses: actions/upload-artifact@v3
         with:
-          name: parachain-template
-          path: ${{ github.workspace }}/target/x86_64-unknown-linux-gnu/release/parachain-template
+          name: parachain-template-node
+          path: ${{ github.workspace }}/target/x86_64-unknown-linux-gnu/release/parachain-template-node
 
   build-image:
     # The type of runner that the job will run on
@@ -141,7 +141,7 @@ jobs:
       - name: Download x86_64 linux binary
         uses: actions/download-artifact@v3
         with:
-          name: parachain-template
+          name: parachain-template-node
           path: ${{ github.workspace }}
 
       # Build and push 2 images, One with the version tag and the other with latest tag
