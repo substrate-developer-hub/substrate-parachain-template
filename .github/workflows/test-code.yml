@@ -1,42 +1,38 @@
 name: Test Code
 
+# Controls when the action will run.
 on:
+  # Triggers the workflow on push or pull request events but only for the master branch
   pull_request:
     branches:
     - main
   push:
     branches:
     - main
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test-code:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout Code
-      uses: actions/checkout@v2
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v1
+      uses: actions/checkout@v3
 
-      # Steps taken from https://github.com/actions/cache/blob/master/examples.md#rust---cargo
-    - name: Cache cargo registry
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target
-        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+    - name: Install linux dependencies
+      run: sudo apt-get install -y clang libssl-dev llvm libudev-dev protobuf-compiler
 
-    - name: Install toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: nightly
-        components: rustfmt, clippy
-        target: wasm32-unknown-unknown
-        override: true
-        default: true
+    - name: Install Rust
+      run: |
+        rustup update stable --no-self-update
+        rustup target add wasm32-unknown-unknown
+
+    # Rust cache
+    - uses: Swatinem/rust-cache@v2
 
     # Enable this for clippy linting.
     # - name: Check and Lint Code
