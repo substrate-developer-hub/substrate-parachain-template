@@ -37,7 +37,7 @@ After the pipeline is finished, you can download the binary from the releases pa
 
 Check the [CI release workflow](./.github/workflows/release.yml) to see how the Docker image is built on CI.
 
-Add your `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets to your forked repository or organization settings.
+Add your `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets or other organization settings to your forked repository.
 Change the `DOCKER_REPO` variable in the workflow to `[your DockerHub registry name]/[image name]`.
 
 Push a tag.
