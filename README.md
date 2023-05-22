@@ -25,7 +25,7 @@ parathreads [here](https://wiki.polkadot.network/docs/learn-parathreads).
 ### Binary
 
 Check the [CI release workflow](./.github/workflows/release.yml) to see how the binary is built on CI.
-Remove or add the compilation targets.
+You can modify the compilation targets depending on your needs.
 
 Allow GitHub actions in your forked repository to build the binary for you.
 
