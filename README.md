@@ -29,7 +29,7 @@ You can modify the compilation targets depending on your needs.
 
 Allow GitHub actions in your forked repository to build the binary for you.
 
-Push a tag. I.e. `v0.1.1`. The supported tag format is `v?MAJOR.MINOR.PATCH(-PRERELEASE)?(+BUILD_METADATA)?`. (leading "v", pre-release version, and build metadata are optional.) The optional prefix is also supported. This is based on [Semantic Versioning](https://semver.org/).
+Push a tag. For example, `v0.1.1`. Based on [Semantic Versioning](https://semver.org/), the supported tag format is `v?MAJOR.MINOR.PATCH(-PRERELEASE)?(+BUILD_METADATA)?` (the leading "v", pre-release version, and build metadata are optional and the optional prefix is also supported).
 
 After the pipeline is finished, you can download the binary from the releases page.
 
