@@ -12,7 +12,7 @@ edition = "2021"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [build-dependencies]
-substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", optional = true , branch = "release-v1.0.0-cumulus" }
+substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", optional = true, branch = "release-v1.0.0-cumulus" }
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive"] }
