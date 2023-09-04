@@ -66,7 +66,7 @@ cumulus-client-service = { git = "https://github.com/paritytech/cumulus.git", br
 cumulus-primitives-core = { git = "https://github.com/paritytech/cumulus.git", branch = "polkadot-v1.0.0" }
 cumulus-primitives-parachain-inherent = { git = "https://github.com/paritytech/cumulus.git", branch = "polkadot-v1.0.0" }
 cumulus-relay-chain-interface = { git = "https://github.com/paritytech/cumulus.git", branch = "polkadot-v1.0.0" }
-color-print = "0.3.4"
+color-print = "0.3.5"
 
 [build-dependencies]
 substrate-build-script-utils = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v1.0.0" }
