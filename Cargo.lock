@@ -4002,13 +4002,13 @@ dependencies = [
 
 [[package]]
 name = "jsonrpsee"
-version = "0.20.2"
+version = "0.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de902baa44bf34a58b1a4906f8b840d7d60dcec5f41fe08b4dbc14cf9efa821c"
+checksum = "affdc52f7596ccb2d7645231fc6163bb314630c989b64998f3699a28b4d5d4dc"
 dependencies = [
- "jsonrpsee-core 0.20.2",
- "jsonrpsee-server 0.20.2",
- "jsonrpsee-types 0.20.2",
+ "jsonrpsee-core 0.20.3",
+ "jsonrpsee-server 0.20.3",
+ "jsonrpsee-types 0.20.3",
  "tokio",
 ]
 
@@ -4063,16 +4063,16 @@ dependencies = [
 
 [[package]]
 name = "jsonrpsee-core"
-version = "0.20.2"
+version = "0.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51f45d37af23707750136379f6799e76ebfcf2d425ec4e36d0deb7921da5e65c"
+checksum = "da2327ba8df2fdbd5e897e2b5ed25ce7f299d345b9736b6828814c3dbd1fd47b"
 dependencies = [
  "anyhow",
  "async-trait",
  "beef",
  "futures-util",
  "hyper",
- "jsonrpsee-types 0.20.2",
+ "jsonrpsee-types 0.20.3",
  "parking_lot 0.12.1",
  "rand 0.8.5",
  "rustc-hash",
@@ -4140,15 +4140,15 @@ dependencies = [
 
 [[package]]
 name = "jsonrpsee-server"
-version = "0.20.2"
+version = "0.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ed2bec9c76cee118c27138cc1c877938bcaa01207a5d902b80dbfc60466bc9c"
+checksum = "82c39a00449c9ef3f50b84fc00fc4acba20ef8f559f07902244abf4c15c5ab9c"
 dependencies = [
  "futures-util",
  "http",
  "hyper",
- "jsonrpsee-core 0.20.2",
- "jsonrpsee-types 0.20.2",
+ "jsonrpsee-core 0.20.3",
+ "jsonrpsee-types 0.20.3",
  "route-recognizer",
  "serde",
  "serde_json",
@@ -4177,9 +4177,9 @@ dependencies = [
 
 [[package]]
 name = "jsonrpsee-types"
-version = "0.20.2"
+version = "0.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05eaff23af19f10ba6fbb76519bed6da4d3b9bbaef13d39b7c2b6c14e532d27e"
+checksum = "5be0be325642e850ed0bdff426674d2e66b2b7117c9be23a7caef68a2902b7d9"
 dependencies = [
  "anyhow",
  "beef",
@@ -6788,7 +6788,7 @@ dependencies = [
  "frame-benchmarking",
  "frame-benchmarking-cli",
  "futures",
- "jsonrpsee 0.20.2",
+ "jsonrpsee 0.20.3",
  "log",
  "pallet-transaction-payment-rpc",
  "parachain-template-runtime",
