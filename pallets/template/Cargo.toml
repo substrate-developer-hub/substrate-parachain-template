@@ -21,7 +21,7 @@ frame-support = { git = "https://github.com/paritytech/substrate", default-featu
 frame-system = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v1.0.0" }
 
 [dev-dependencies]
-serde = { version = "1.0.188" }
+serde = { version = "1.0.193" }
 
 # Substrate
 sp-core = { git = "https://github.com/paritytech/substrate", default-features = false, branch = "polkadot-v1.0.0" }
