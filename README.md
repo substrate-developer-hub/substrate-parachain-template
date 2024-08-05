@@ -1,5 +1,9 @@
 # Substrate Cumulus Parachain Template
 
+> [!WARNING]
+> ### DEPRECATED
+> This template is deprecated and should no longer be used. For a new parachain-ready template, please use [`polkadot-sdk-parachain-template`](https://github.com/paritytech/polkadot-sdk-parachain-template). For a further list of templates, please see [`polkadot_sdk_docs::templates`](https://paritytech.github.io/polkadot-sdk/master/polkadot_sdk_docs/polkadot_sdk/templates/index.html).
+
 A new [Cumulus](https://github.com/paritytech/cumulus/)-based Substrate node, ready for hacking ☁️..
 
 This project is originally a fork of the
